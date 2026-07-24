@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;0,800;1,400&display=swap"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230a0a0a'/><text y='.9em' x='5' font-size='80' font-weight='700' font-family='Space Mono' fill='%23ff5722'>K.</text></svg>" type="image/svg+xml"/>
+<title>KOVA Coaching | The Pursuit of Human Performance — Gold Coast + Online</title>
+<meta name="description" content="Premium personal training at EMF Home Gym Robina and online coaching. Intelligent programming for glute and physique development, built around how you move."/>
+<style>
+:root{
+  --ink:#0a0a0a;--ink-2:#141414;
+  --paper:#f0efe9;--white:#fafaf7;
+  --steel:#9a9a93;--steel-2:#6e6e68;
+  --line:rgba(255,255,255,.08);--line-dark:rgba(0,0,0,.08);
+  --acid:#ff5722;--ember:#cc4125;
+  --display:"Space Mono",monospace;--body:"JetBrains Mono",monospace;
+  --maxw:1280px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{color:var(--ink);background:var(--paper);font-family:var(--body);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--acid);color:var(--ink)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font:inherit;color:inherit}
+em{font-style:italic}
+img{max-width:100%;display:block}
+.serif{font-family:var(--display);font-weight:400;font-style:italic}
+.container{max-width:var(--maxw);margin:0 auto;padding:0 5vw}
+
+/* GLOBAL HEADING RULES — ALL UPPERCASE */
+h1,h2,h3,h4{text-transform:uppercase;letter-spacing:-.02em}
+
+/* ANNOUNCEMENT BANNER */
+.announce{background:#1a1a1a;padding:.6rem 5vw;display:flex;align-items:center;justify-content:center;gap:1rem;font-size:.75rem;color:rgba(255,255,255,.6);position:fixed;top:0;left:0;right:0;z-index:101;border-bottom:1px solid var(--line);font-family:var(--body)}
+.announce-icon{width:16px;height:16px;border-radius:50%;border:1px solid var(--acid);display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--acid);font-weight:800;flex-shrink:0}
+.announce-text{font-weight:500}
+.announce-text strong{color:#fff;font-weight:700;text-transform:uppercase}
+.announce-cta{color:var(--acid);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:.7rem;border-bottom:1px solid var(--acid);padding-bottom:1px;transition:opacity .2s}
+.announce-cta:hover{opacity:.7}
+@media(max-width:600px){.announce{font-size:.68rem;gap:.5rem}.announce-text{display:none}.announce-text.mobile{display:inline}}
+@media(min-width:601px){.announce-text.mobile{display:none}}
+
+/* HEADER */
+.site-header{position:fixed;top:36px;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.15rem 5vw;background:rgba(10,10,10,.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--line);transition:padding .3s}
+.site-header.scrolled{padding:.85rem 5vw}
+.wordmark{font-family:var(--display);letter-spacing:-.04em;font-size:1.4rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:1px}
+.wordmark span{color:var(--acid)}
+.nav-links{display:flex;align-items:center;gap:2.2rem}
+.nav-links a{color:rgba(255,255,255,.7);font-size:.75rem;font-weight:500;letter-spacing:.04em;transition:color .2s;text-transform:uppercase;font-family:var(--body)}
+.nav-links a:hover{color:var(--acid)}
+.nav-cta{border:1px solid var(--acid);padding:.5rem 1.1rem;font-size:.72rem;font-weight:700;color:#fff;letter-spacing:.04em;display:inline-flex;align-items:center;gap:.4rem;transition:all .25s;border-radius:1px;text-transform:uppercase}
+.nav-cta:hover{background:var(--acid);color:var(--ink)}
+.menu-btn{display:none;color:#fff;z-index:101}
+.mobile-menu{display:none;position:fixed;inset:0;z-index:99;background:var(--ink);padding:6rem 5vw 3rem;flex-direction:column;gap:1.8rem}
+.mobile-menu.open{display:flex}
+.mobile-menu a{color:#fff;font-size:1.8rem;font-weight:700;font-family:var(--display);letter-spacing:-.02em;text-transform:uppercase}
+.mobile-menu a:hover{color:var(--acid)}
+@media(max-width:860px){.nav-links{display:none}.menu-btn{display:block}}
+
+/* HERO */
+.hero{position:relative;min-height:100vh;background:var(--ink);display:flex;align-items:center;padding:10rem 5vw 4rem;color:#fff;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,.55) 0%,rgba(10,10,10,.82) 60%,rgba(10,10,10,.95) 100%),url("https://base44.app/api/apps/6a5b36331febe257897d936b/files/mp/public/6a5b36331febe257897d936b/7b7950640_45c269358_IMG_1091.jpg") center 20%/cover;z-index:0}
+.hero-grain{position:absolute;inset:0;z-index:1;opacity:.04;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.hero-watermark{position:absolute;top:50%;right:5vw;transform:translateY(-50%);font-family:var(--display);font-size:clamp(12rem,30vw,28rem);font-weight:700;color:rgba(255,255,255,.03);line-height:1;pointer-events:none;z-index:1}
+.hero-content{position:relative;z-index:2;max-width:1100px;width:100%}
+.hero-eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:.68rem;font-weight:700;color:rgba(255,255,255,.5);display:inline-flex;align-items:center;gap:.7rem;margin-bottom:2rem;font-family:var(--body)}
+.hero-eyebrow span{width:24px;height:1px;background:var(--acid)}
+.hero h1{font-family:var(--display);font-size:clamp(2.5rem,9vw,8rem);font-weight:700;line-height:.9;letter-spacing:-.04em;margin-bottom:2.5rem;text-transform:uppercase}
+.hero h1 .serif{color:var(--acid)}
+.hero-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+.hero-bottom p{color:rgba(255,255,255,.65);max-width:420px;font-size:1rem;line-height:1.7;font-family:var(--body)}
+.hero-cta-group{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
+.btn-primary{display:inline-flex;align-items:center;gap:.6rem;background:var(--acid);color:var(--ink);padding:1rem 2rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;transition:all .25s;border-radius:1px;font-family:var(--body)}
+.btn-primary:hover{background:#fff;transform:translateY(-2px)}
+.btn-outline{display:inline-flex;align-items:center;gap:.5rem;border:1px solid rgba(255,255,255,.25);color:#fff;padding:1rem 1.8rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;transition:all .25s;border-radius:1px;font-family:var(--body)}
+.btn-outline:hover{border-color:var(--acid);color:var(--acid)}
+.hero-scroll{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;z-index:2}
+.hero-scroll span{color:rgba(255,255,255,.3);font-size:.62rem;text-transform:uppercase;letter-spacing:.2em;font-family:var(--body)}
+.hero-scroll-line{width:1px;height:40px;background:linear-gradient(var(--acid),transparent);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* SECTION WATERMARK */
+.section-mark{position:relative}
+.section-watermark{position:absolute;top:-2rem;right:0;font-family:var(--display);font-size:clamp(8rem,18vw,16rem);font-weight:700;color:rgba(255,255,255,.025);line-height:1;pointer-events:none;z-index:0;letter-spacing:-.05em}
+.section-watermark.dark{color:rgba(0,0,0,.03)}
+.section-mark>.container,.section-mark>div:not(.section-watermark){position:relative;z-index:1}
+
+/* STATS BAR */
+.stats-bar{background:var(--ink);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:3rem 5vw}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;max-width:var(--maxw);margin:0 auto}
+.stat{text-align:center}
+.stat-num{font-family:var(--display);font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;color:var(--acid);letter-spacing:-.03em;line-height:1;text-transform:uppercase}
+.stat-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.4);font-weight:500;margin-top:.5rem;font-family:var(--body)}
+@media(max-width:600px){.stats-grid{grid-template-columns:repeat(2,1fr);gap:2rem}}
+
+/* STATEMENT */
+.statement{padding:clamp(4rem,8vw,7rem) 5vw;position:relative;overflow:hidden}
+.statement::before{content:"";position:absolute;inset:0;background:url("https://base44.app/api/apps/6a5b36331febe257897d936b/files/mp/public/6a5b36331febe257897d936b/50b8c5ec3_7537a11c0_IMG_1097.jpg") center/cover;opacity:.06;pointer-events:none;z-index:0;filter:grayscale(1)}
+.statement-grid{position:relative;z-index:1}
+.statement-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:5rem;max-width:var(--maxw);align-items:start}
+.statement h2{font-family:var(--display);font-size:clamp(1.8rem,4.5vw,4rem);font-weight:700;line-height:.95;letter-spacing:-.03em}
+.statement h2 .serif{color:var(--acid)}
+.statement-copy p{color:var(--steel-2);margin-bottom:1.2rem;font-size:1rem;line-height:1.75;font-family:var(--body)}
+.text-link{display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-size:.78rem;letter-spacing:.03em;border-bottom:1px solid var(--acid);padding-bottom:3px;transition:color .2s;text-transform:uppercase;font-family:var(--body)}
+.text-link:hover{color:var(--acid)}
+@media(max-width:768px){.statement-grid{grid-template-columns:1fr;gap:2rem}}
+
+/* TICKER */
+.ticker{background:var(--acid);color:var(--ink);padding:1.1rem 0;overflow:hidden;transform:rotate(-1.2deg) scale(1.02);position:relative;z-index:3;margin:0 -2vw}
+.ticker-track{display:flex;white-space:nowrap;animation:scroll 40s linear infinite}
+.ticker-track span{font-family:var(--display);font-weight:700;font-size:1.1rem;letter-spacing:.12em;text-transform:uppercase;padding-right:2rem}
+.ticker-track i{font-style:normal;padding:0 1rem;opacity:.4}
+@keyframes scroll{to{transform:translateX(-50%)}}
+
+/* GENERIC */
+.section{padding:clamp(5rem,10vw,9rem) 5vw}
+.dark{background:var(--ink);color:#fff}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:.68rem;font-weight:700;display:inline-flex;align-items:center;gap:.6rem;font-family:var(--body)}
+.eyebrow span{width:18px;height:1px;background:var(--acid)}
+.eyebrow.dark-text{color:var(--steel-2)}
+.eyebrow.light-text{color:rgba(255,255,255,.5)}
+
+/* METHOD */
+.method-header{margin-bottom:4rem;max-width:800px}
+.method-header h2{font-family:var(--display);font-size:clamp(1.8rem,4.5vw,4rem);font-weight:700;line-height:.95;letter-spacing:-.03em;margin-top:1rem}
+.method-header h2 .serif{color:var(--acid)}
+.method-principles{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);margin-bottom:4rem}
+.principle{padding:2.5rem 2rem;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:1.2rem;transition:background .3s}
+.principle:last-child{border-right:none}
+.principle:hover{background:rgba(255,87,34,.04)}
+.principle-num{color:var(--acid);letter-spacing:.15em;font-size:.68rem;font-weight:700;font-family:var(--body);text-transform:uppercase}
+.principle h3{font-family:var(--display);font-size:1.3rem;font-weight:700;letter-spacing:-.02em}
+.principle p{color:rgba(255,255,255,.55);font-size:.92rem;line-height:1.65;font-family:var(--body)}
+.method-sequence{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;padding:0 0 3rem}
+.method-seq-item{font-family:var(--body);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;font-weight:500;color:rgba(255,255,255,.5);padding:.6rem 1rem;border:1px solid var(--line);transition:all .25s}
+.method-seq-item:hover{border-color:var(--acid);color:var(--acid)}
+.method-seq-arrow{color:var(--acid);font-size:1rem}
+.method-visual{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:end}
+.method-photo{filter:grayscale(.4) brightness(.65) contrast(1.1);background:linear-gradient(rgba(10,10,10,.3),rgba(10,10,10,.6)),url("https://base44.app/api/apps/6a5b36331febe257897d936b/files/mp/public/6a5b36331febe257897d936b/398d611f8_f2f0fb0cd_3C0E765F-8ADC-434C-880A-413EC5AC4C0E.jpg") center/cover;min-height:500px}
+.method-quote{background:var(--acid);color:var(--ink);font-family:var(--display);text-transform:uppercase;letter-spacing:-.03em;padding:2.5rem;font-size:clamp(1.1rem,2.5vw,2rem);line-height:1.1;font-weight:700;transform:rotate(1.5deg);align-self:start;margin-top:2rem}
+.method-quote .serif{color:var(--ink);font-weight:400}
+@media(max-width:860px){.method-principles{grid-template-columns:1fr}.principle{border-right:none;border-bottom:1px solid var(--line)}.method-visual{grid-template-columns:1fr}.method-quote{transform:none;margin-top:0}}
+
+/* FIT GATEWAY */
+.fit-gateway{padding:clamp(5rem,10vw,9rem) 5vw}
+.fit-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:var(--maxw);margin:0 auto}
+.fit-col{padding:3rem;border:1px solid var(--line-dark)}
+.fit-col h3{font-family:var(--display);font-size:1.4rem;font-weight:700;letter-spacing:-.02em;margin-bottom:2rem;padding-bottom:1rem;border-bottom:2px solid}
+.fit-good{border-color:var(--acid)}
+.fit-good h3{border-color:var(--acid)}
+.fit-bad{border-color:var(--steel)}
+.fit-bad h3{color:var(--steel);border-color:var(--steel)}
+.fit-col ul{list-style:none;display:flex;flex-direction:column;gap:1rem}
+.fit-col li{display:flex;align-items:start;gap:.8rem;font-size:.92rem;line-height:1.6;color:var(--steel-2);font-family:var(--body)}
+.fit-good li svg{color:var(--acid);flex-shrink:0;margin-top:2px}
+.fit-bad li svg{color:var(--steel);flex-shrink:0;margin-top:2px}
+@media(max-width:768px){.fit-grid{grid-template-columns:1fr}}
+
+/* KOVA ACRONYM */
+.acronym{padding:clamp(5rem,10vw,9rem) 5vw;background:var(--ink);border-top:1px solid var(--line)}
+.acronym-header{text-align:center;margin-bottom:4rem;max-width:700px;margin-left:auto;margin-right:auto}
+.acronym-header h2{font-family:var(--display);font-size:clamp(1.8rem,4.5vw,4rem);font-weight:700;line-height:.95;letter-spacing:-.03em;margin-top:1rem}
+.acronym-header h2 .serif{color:var(--acid)}
+.acronym-header p{color:rgba(255,255,255,.5);font-size:.98rem;margin-top:1.5rem;line-height:1.7;font-family:var(--body)}
+.acronym-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);max-width:var(--maxw);margin:0 auto}
+.acronym-card{padding:3rem 2rem;border-right:1px solid var(--line);text-align:center;transition:background .3s}
+.acronym-card:last-child{border-right:none}
+.acronym-card:hover{background:rgba(255,87,34,.04)}
+.acronym-letter{font-family:var(--display);font-size:clamp(3rem,6vw,5rem);font-weight:700;color:var(--acid);line-height:1;letter-spacing:-.05em;margin-bottom:1rem}
+.acronym-word{font-family:var(--display);font-size:1.3rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1.5rem}
+.acronym-desc{color:rgba(255,255,255,.55);font-size:.88rem;line-height:1.6;margin-bottom:1rem;font-family:var(--body)}
+.acronym-tag{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--acid);font-family:var(--body)}
+.acronym-footer{text-align:center;margin-top:3rem;padding-top:3rem;border-top:1px solid var(--line);max-width:var(--maxw);margin-left:auto;margin-right:auto}
+.acronym-footer h3{font-family:var(--display);font-size:clamp(1.4rem,3vw,2.3rem);font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-bottom:.8rem}
+.acronym-footer h3 .serif{color:var(--acid)}
+.acronym-footer p{color:rgba(255,255,255,.4);font-size:.82rem;text-transform:uppercase;letter-spacing:.15em;font-weight:500;font-family:var(--body)}
+@media(max-width:860px){.acronym-grid{grid-template-columns:repeat(2,1fr)}.acronym-card{border-bottom:1px solid var(--line)}.acronym-card:nth-child(2){border-right:none}}
+@media(max-width:600px){.acronym-grid{grid-template-columns:1fr}.acronym-card{border-right:none}}
+
+/* OUTCOMES */
+.outcomes-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:5rem;max-width:var(--maxw);align-items:start}
+.outcomes h2{font-family:var(--display);font-size:clamp(1.8rem,4.5vw,4rem);font-weight:700;line-height:.95;letter-spacing:-.03em;margin-top:1rem}
+.outcomes h2 .serif{color:var(--acid)}
+.outcome-list{display:flex;flex-direction:column}
+.outcome-item{display:grid;grid-template-columns:auto 1fr;align-items:start;gap:2rem;padding:2rem 0;border-bottom:1px solid var(--line-dark);transition:padding-left .3s}
+.outcome-item:hover{padding-left:1rem}
+.outcome-num{font-family:var(--display);font-size:1.3rem;font-weight:700;color:var(--steel)}
+.outcome-content h3{font-family:var(--display);font-size:1.15rem;font-weight:700;letter-spacing:-.01em;margin-bottom:.4rem}
+.outcome-content p{color:var(--steel-2);font-size:.92rem;line-height:1.6;font-family:var(--body)}
+@media(max-width:768px){.outcomes-grid{grid-template-columns:1fr;gap:2rem}}
+
+/* COACHING */
+.coaching-header{margin-bottom:4rem;max-width:800px}
+.coaching-header h2{font-family:var(--display);font-size:clamp(1.8rem,4.5vw,4rem);font-weight:700;line-height:.95;letter-spacing:-.03em;margin-top:1rem}
+.coaching-header h2 .serif{color:var(--acid)}
+.service-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;max-width:var(--maxw)}
+.service-card{border:1px solid var(--line);padding:3rem 2.5rem;display:flex;flex-direction:column;gap:1.5rem;transition:border-color .3s,background .3s}
+.service-card:hover{border-color:var(--acid);background:rgba(255,87,34,.03)}
+.service-card.featured{border-color:var(--acid)}
+.service-tag{text-transform:uppercase;letter-spacing:.15em;font-size:.6rem;font-weight:700;color:rgba(255,255,255,.35);display:flex;align-items:center;justify-content:space-between;font-family:var(--body)}
+.featured .service-tag{color:var(--acid)}
+.service-card h3{font-family:var(--display);font-size:1.5rem;font-weight:700;letter-spacing:-.02em}
+.service-card .desc{color:rgba(255,255,255,.55);font-size:.92rem;line-height:1.65;font-family:var(--body)}
+.service-features{list-style:none;display:flex;flex-direction:column;gap:.7rem;margin-top:.5rem}
+.service-features li{display:flex;align-items:center;gap:.6rem;font-size:.88rem;color:rgba(255,255,255,.65);font-family:var(--body)}
+.service-features svg{color:var(--steel);flex-shrink:0;width:15px;height:15px}
+.featured .service-features svg{color:var(--acid)}
+.btn-service{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border:1px solid rgba(255,255,255,.15);padding:.85rem 1.5rem;font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;transition:all .25s;margin-top:auto;border-radius:1px;font-family:var(--body)}
+.btn-service:hover{background:var(--acid);color:var(--ink);border-color:var(--acid)}
+@media(max-width:860px){.service-grid{grid-template-columns:1fr}}
+
+/* ONBOARDING */
+.onboarding{padding:clamp(4rem,8vw,7rem) 5vw;border-top:1px solid var(--line)}
+.onboarding-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;max-width:var(--maxw);margin:3rem auto 0}
+.onboarding-step{padding:2.5rem 2rem;border-right:1px solid var(--line);position:relative}
+.onboarding-step:last-child{border-right:none}
+.onboarding-num{font-family:var(--display);font-size:clamp(2rem,4vw,3.5rem);font-weight:700;color:var(--acid);letter-spacing:-.03em;line-height:1;margin-bottom:1rem;opacity:.6}
+.onboarding-step h3{font-family:var(--display);font-size:1.15rem;font-weight:700;letter-spacing:-.02em;margin-bottom:.8rem}
+.onboarding-step p{color:rgba(255,255,255,.5);font-size:.88rem;line-height:1.6;font-family:var(--body)}
+@media(max-width:860px){.onboarding-grid{grid-template-columns:1fr}.onboarding-step{border-right:none;border-bottom:1px solid var(--line)}}
+
+/* ABOUT */
+.about{display:grid;grid-template-columns:1fr 1fr;min-height:600px}
+.about-photo{filter:grayscale(.3) brightness(.6) contrast(1.1);background:linear-gradient(rgba(10,10,10,.3),rgba(10,10,10,.65)),url("https://base44.app/api/apps/6a5b36331febe257897d936b/files/mp/public/6a5b36331febe257897d936b/9642e2f8f_456e900cd_IMG_4731.jpg") center top/cover;min-height:680px;position:relative}
+.about-badge{background:var(--acid);color:var(--ink);text-transform:uppercase;letter-spacing:.1em;padding:.85rem 1.2rem;font-size:.6rem;font-weight:700;display:inline-flex;align-items:center;gap:.5rem;position:absolute;bottom:2rem;left:2rem;font-family:var(--body)}
+.about-content{background:var(--ink);color:#fff;padding:clamp(3.5rem,7vw,6rem) 5vw;display:flex;flex-direction:column;justify-content:center}
+.about-content h2{font-family:var(--display);font-size:clamp(2rem,5vw,4rem);font-weight:700;line-height:.9;letter-spacing:-.03em;margin-bottom:2rem}
+.about-content h2 .serif{color:var(--acid)}
+.about-content p{color:rgba(255,255,255,.6);font-size:1rem;line-height:1.75;margin-bottom:1.3rem;max-width:480px;font-family:var(--body)}
+.about-stats{display:flex;gap:3rem;margin:2rem 0;padding:2rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.about-stat-num{font-family:var(--display);font-size:2.3rem;font-weight:700;color:var(--acid);letter-spacing:-.03em}
+.about-stat-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.4);font-weight:500;margin-top:.3rem;font-family:var(--body)}
+.credentials{display:flex;flex-direction:column;gap:.4rem;margin-top:1.5rem}
+.credentials p{font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,.35);margin:0;font-family:var(--body)}
+@media(max-width:768px){.about{grid-template-columns:1fr}.about-photo{min-height:400px}}
+
+/* PHILOSOPHY */
+.philosophy{padding:clamp(5rem,10vw,9rem) 5vw;text-align:center;position:relative;overflow:hidden}
+.philosophy::before{content:"";position:absolute;inset:0;background:url("https://base44.app/api/apps/6a5b36331febe257897d936b/files/mp/public/6a5b36331febe257897d936b/40602b50d_f5eb6da5b_IMG_1090.jpg") center/cover;opacity:.07;pointer-events:none;z-index:0;filter:grayscale(1)}
+.philosophy-inner{position:relative;z-index:1}
+.philosophy-inner{max-width:900px;margin:0 auto}
+.philosophy h2{font-family:var(--display);font-size:clamp(2.2rem,6vw,5rem);font-weight:700;line-height:.92;letter-spacing:-.035em;margin:1.5rem 0 2rem}
+.philosophy h2 .serif{color:var(--acid)}
+.philosophy p{color:rgba(255,255,255,.6);font-size:1.05rem;line-height:1.8;max-width:680px;margin:0 auto 1.5rem;font-family:var(--body)}
+.philosophy-mark{font-family:var(--display);font-size:.78rem;text-transform:uppercase;letter-spacing:.2em;color:rgba(255,255,255,.3);font-weight:700}
+.philosophy-cta{margin-top:3rem;display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+
+/* B4B MARK */
+.b4b-mark{font-family:var(--display);font-size:clamp(1.1rem,2.5vw,1.8rem);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--acid);margin-top:1.5rem;display:inline-block}
+
+/* INFLUENCES */
+.influences{padding:clamp(4rem,6vw,6rem) 5vw;border-top:1px solid var(--line)}
+.influences-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;max-width:var(--maxw);margin:2rem auto 0}
+.influence-tag{border:1px solid var(--line);padding:1.2rem 1.5rem;font-family:var(--display);font-size:.92rem;font-weight:700;letter-spacing:-.01em;transition:all .25s;text-align:center;text-transform:uppercase}
+.influence-tag:hover{border-color:var(--acid);color:var(--acid)}
+
+/* CONTACT */
+.contact{padding:clamp(5rem,10vw,9rem) 5vw}
+.contact-inner{max-width:680px;margin:0 auto}
+.contact h2{font-family:var(--display);font-size:clamp(2rem,5vw,4rem);font-weight:700;line-height:.92;letter-spacing:-.03em;margin:1rem 0 1.5rem}
+.contact h2 .serif{color:var(--acid)}
+.contact-lead{color:var(--steel-2);font-size:1rem;line-height:1.75;margin-bottom:2.5rem;max-width:520px;font-family:var(--body)}
+.contact-links{display:flex;gap:1rem;margin-bottom:2.5rem;flex-wrap:wrap}
+.contact-link{display:inline-flex;align-items:center;gap:.6rem;padding:.85rem 1.5rem;border:1px solid var(--line-dark);font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;transition:all .25s;border-radius:1px;font-family:var(--body)}
+.contact-link:hover{border-color:var(--acid);color:var(--acid)}
+.contact-link svg{width:18px;height:18px;flex-shrink:0}
+.contact-info{display:flex;gap:2rem;margin-bottom:2.5rem;flex-wrap:wrap}
+.contact-info-item{display:flex;flex-direction:column;gap:.3rem}
+.contact-info-label{font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:var(--steel);font-family:var(--body)}
+.contact-info-value{font-size:.92rem;font-weight:500;color:var(--ink);font-family:var(--body)}
+form[name="coaching-enquiry"]{display:flex;flex-direction:column;gap:1rem}
+.hidden-field{display:none}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+form label{display:flex;flex-direction:column;gap:.4rem;font-size:.66rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--steel);font-family:var(--body)}
+form input,form select,form textarea{background:transparent;border:1px solid var(--line-dark);padding:.9rem;font-size:.95rem;font-family:var(--body);color:var(--ink);border-radius:0;transition:border-color .2s}
+form input:focus,form select:focus,form textarea:focus{outline:none;border-color:var(--acid)}
+form textarea{resize:vertical;min-height:120px}
+.submit-btn{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;background:var(--ink);color:#fff;padding:1.1rem 2rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;transition:all .25s;margin-top:.5rem;border-radius:1px;font-family:var(--body)}
+.submit-btn:hover{background:var(--acid);color:var(--ink)}
+.form-note{text-align:center;color:var(--steel);font-size:.82rem;margin-top:1.5rem;line-height:1.6;font-family:var(--body)}
+@media(max-width:600px){.field-row{grid-template-columns:1fr}}
+
+/* FOOTER */
+footer{background:var(--ink);color:rgba(255,255,255,.4);padding:4rem 5vw 2rem}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;max-width:var(--maxw);margin:0 auto 3rem;padding-bottom:3rem;border-bottom:1px solid var(--line)}
+.footer-brand{font-family:var(--display);font-size:1.6rem;font-weight:700;color:#fff;letter-spacing:-.04em;margin-bottom:1rem}
+.footer-brand span{color:var(--acid)}
+.footer-tagline{color:rgba(255,255,255,.4);font-size:.92rem;line-height:1.6;max-width:320px;margin-bottom:1.5rem;font-family:var(--body)}
+.footer-social{display:flex;gap:1rem}
+.footer-social a{width:40px;height:40px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;transition:all .25s;border-radius:1px}
+.footer-social a:hover{border-color:var(--acid);color:var(--acid)}
+.footer-col h4{font-size:.66rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:1rem;font-family:var(--body)}
+.footer-col a{display:block;font-size:.88rem;color:rgba(255,255,255,.4);margin-bottom:.6rem;transition:color .2s;font-family:var(--body)}
+.footer-col a:hover{color:var(--acid)}
+.footer-tagline-bar{padding:2rem 0;border-top:1px solid var(--line);text-align:center;max-width:var(--maxw);margin:0 auto}
+.footer-tagline-bar p{font-family:var(--display);font-size:clamp(1rem,2vw,1.5rem);font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.25)}
+.footer-tagline-bar span{color:var(--acid)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;font-size:.78rem;max-width:var(--maxw);margin:1.5rem auto 0;font-family:var(--body)}
+@media(max-width:768px){.footer-top{grid-template-columns:1fr;gap:2rem}}
+
+/* PHOTO STRIP */
+.photo-strip{display:grid;grid-template-columns:repeat(3,1fr);height:340px;overflow:hidden}
+.photo-strip-img{background-size:cover;background-repeat:no-repeat;filter:grayscale(.5) brightness(.7) contrast(1.05);transition:filter .4s}
+.photo-strip-img:hover{filter:grayscale(.1) brightness(.8) contrast(1.05)}
+@media(max-width:600px){.photo-strip{grid-template-columns:1fr;height:220px}}
+
+/* ANIMATIONS */
+.fade-up{opacity:0;transform:translateY(40px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+@media(max-width:860px){.hero{padding:8rem 5vw 3rem}.hero h1{font-size:clamp(2.2rem,12vw,4.5rem)}.method-sequence{gap:.4rem}.method-seq-item{padding:.5rem .7rem;font-size:.7rem}}
+</style>
+</head>
+<body>
+
+<!-- ANNOUNCEMENT BANNER -->
+<div class="announce">
+  <div class="announce-icon">i</div>
+  <span class="announce-text"><strong>IN-PERSON CONSULTATIONS NOW OPEN</strong> · EMF HOME GYM ROBINA · BOOK VIA LINKTREE</span>
+  <span class="announce-text mobile">CONSULTATIONS OPEN · EMF ROBINA</span>
+  <a href="https://linktr.ee/TEAM.KOVA_COACHING" target="_blank" class="announce-cta">Book now ↗</a>
+</div>
+
+<!-- HEADER -->
+<header class="site-header" id="header">
+  <a class="wordmark" href="#top">KOVA<span>.</span></a>
+  <nav class="nav-links">
+    <a href="#method">Method</a>
+    <a href="#kova-meaning">KOVA</a>
+    <a href="#coaching">Coaching</a>
+    <a href="#about">About</a>
+    <a href="#contact" class="nav-cta">Start your pursuit ↗</a>
+  </nav>
+  <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+  </button>
+</header>
+<nav class="mobile-menu" id="mobileMenu">
+  <a href="#method">Method</a>
+  <a href="#kova-meaning">KOVA</a>
+  <a href="#coaching">Coaching</a>
+  <a href="#about">About</a>
+  <a href="#contact">Start your pursuit ↗</a>
+</nav>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-watermark">K.</div>
+  <div class="hero-content">
+    <p class="hero-eyebrow"><span></span> KOVA COACHING · EMF HOME GYM ROBINA · GOLD COAST + ONLINE</p>
+    <h1>The pursuit<br>of human<br><span class="serif">performance.</span></h1>
+    <div class="hero-bottom">
+      <p>Intelligent programming for glute and physique development, built around how you move — not how everyone else trains.</p>
+      <div class="hero-cta-group">
+        <a href="#coaching" class="btn-primary">View coaching options ↗</a>
+        <a href="#method" class="btn-outline">The KOVA method</a>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll"><span>Scroll</span><div class="hero-scroll-line"></div></div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stats-grid">
+    <div class="stat"><div class="stat-num">45MIN</div><div class="stat-label">Premium sessions</div></div>
+    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Personalised</div></div>
+    <div class="stat"><div class="stat-num">1:1</div><div class="stat-label">Coaching ratio</div></div>
+    <div class="stat"><div class="stat-num">ONLINE</div><div class="stat-label">+ In-person</div></div>
+  </div>
+</div>
+
+<!-- STATEMENT -->
+<section class="statement">
+  <div class="statement-grid">
+    <div class="fade-up">
+      <p class="eyebrow dark-text"><span></span> RESULTS, NOT ROUTINES</p>
+      <h2 style="margin-top:1rem">Courage isn't something<br>you're born with.<br><span class="serif">It's built one hard choice at a time.</span></h2>
+    </div>
+    <div class="statement-copy fade-up">
+      <p>KOVA sits beyond generic workouts and short-term transformations. Your plan is built from the ground up around your capability, goals and real life.</p>
+      <p>We choose the highest-value exercise you can perform and tolerate well — not simply the most advanced one. That's the difference.</p>
+      <a class="text-link" href="#method">Explore the KOVA method ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>BUILD <i>◆</i> FUEL <i>◆</i> PERFORM <i>◆</i> MOVE WELL <i>◆</i> BUILD <i>◆</i> FUEL <i>◆</i> PERFORM <i>◆</i> MOVE WELL <i>◆</i></span>
+    <span>BUILD <i>◆</i> FUEL <i>◆</i> PERFORM <i>◆</i> MOVE WELL <i>◆</i> BUILD <i>◆</i> FUEL <i>◆</i> PERFORM <i>◆</i> MOVE WELL <i>◆</i></span>
+  </div>
+</div>
+
+<!-- METHOD -->
+<section class="section dark section-mark" id="method">
+  <div class="section-watermark">01</div>
+  <div class="container">
+    <div class="method-header fade-up">
+      <p class="eyebrow light-text"><span></span> THE KOVA METHOD</p>
+      <h2>Intelligent by design.<br><span class="serif">Personal by default.</span></h2>
+    </div>
+    <div class="method-principles">
+      <div class="principle fade-up"><span class="principle-num">01 / ASSESS</span><h3>Assess the person</h3><p>We start with your goals, history, movement, lifestyle and what your body can tolerate today. Not a template — a full picture of you.</p></div>
+      <div class="principle fade-up"><span class="principle-num">02 / EARN</span><h3>Earn the exercise</h3><p>Every movement has a reason. We choose the highest-value option you can perform well, then progress it — earning complexity through capability.</p></div>
+      <div class="principle fade-up"><span class="principle-num">03 / BUILD</span><h3>Build the system</h3><p>Training, nutrition, recovery and habits work together inside a clear plan that evolves with you. A system that lasts, not a six-week sprint.</p></div>
+    </div>
+    <div class="method-sequence fade-up">
+      <div class="method-seq-item">Intake + Health</div><span class="method-seq-arrow">→</span>
+      <div class="method-seq-item">Capability</div><span class="method-seq-arrow">→</span>
+      <div class="method-seq-item">Movement</div><span class="method-seq-arrow">→</span>
+      <div class="method-seq-item">Exercise Fit</div><span class="method-seq-arrow">→</span>
+      <div class="method-seq-item">Programming</div><span class="method-seq-arrow">→</span>
+      <div class="method-seq-item">Autoregulation</div><span class="method-seq-arrow">→</span>
+      <div class="method-seq-item">Review</div>
+    </div>
+    <div class="method-visual">
+      <div class="method-photo fade-up"></div>
+      <div class="method-quote fade-up">The best exercise is the one that delivers value <span class="serif">without costing you tomorrow.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FIT GATEWAY -->
+<section class="section light section-mark">
+  <div class="section-watermark dark">02</div>
+  <div style="text-align:center;margin-bottom:3rem" class="fade-up">
+    <p class="eyebrow dark-text" style="justify-content:center"><span></span> IS KOVA RIGHT FOR YOU?</p>
+    <h2 style="font-family:var(--display);font-size:clamp(1.8rem,4.5vw,3.5rem);font-weight:700;letter-spacing:-.03em;margin-top:1rem;line-height:1">Dedicated to the process.<br><span class="serif" style="color:var(--acid)">Not interested in shortcuts.</span></h2>
+  </div>
+  <div class="fit-grid">
+    <div class="fit-col fit-good fade-up">
+      <h3>You're in the right place if</h3>
+      <ul>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> You want intelligent, personalised programming — not a cookie-cutter plan</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> You're ready to earn your progress through consistent action</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> You want to understand the why behind your training</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> You're focused on long-term capability, not just quick fixes</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> You want coaching that works around your limitations</li>
+      </ul>
+    </div>
+    <div class="fit-col fit-bad fade-up">
+      <h3>KOVA isn't for you if</h3>
+      <ul>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg> You want a generic program pumped out in 5 minutes</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg> You're chasing a 6-week transformation, not a system</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg> You're not willing to show up consistently</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg> You want to be told what to do without understanding why</li>
+        <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg> You're looking for the most advanced exercises before you've earned them</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- KOVA ACRONYM -->
+<section class="acronym section-mark" id="kova-meaning">
+  <div class="section-watermark">03</div>
+  <div class="acronym-header fade-up">
+    <p class="eyebrow light-text" style="justify-content:center"><span></span> WHAT KOVA MEANS</p>
+    <h2>Build yourself<br><span class="serif">from the inside out.</span></h2>
+    <p>KOVA comes from the idea of forging resilience through consistent action. Keep. Overcome. Value. Advance.</p>
+  </div>
+  <div class="acronym-grid">
+    <div class="acronym-card fade-up"><div class="acronym-letter">K</div><div class="acronym-word">Knowledge</div><p class="acronym-desc">Learn before acting.</p><span class="acronym-tag">Learn → Apply</span></div>
+    <div class="acronym-card fade-up"><div class="acronym-letter">O</div><div class="acronym-word">Ownership</div><p class="acronym-desc">Take responsibility.</p><span class="acronym-tag">Own → Act</span></div>
+    <div class="acronym-card fade-up"><div class="acronym-letter">V</div><div class="acronym-word">Vitality</div><p class="acronym-desc">Strength. Health. Energy.</p><span class="acronym-tag">Fuel → Sustain</span></div>
+    <div class="acronym-card fade-up"><div class="acronym-letter">A</div><div class="acronym-word">Action</div><p class="acronym-desc">Consistency over perfection.</p><span class="acronym-tag">Start → Repeat</span></div>
+  </div>
+  <div class="acronym-footer fade-up">
+    <h3>Keep. Overcome. Value. <span class="serif">Advance.</span></h3>
+    <p>Forging resilience through consistent action</p>
+  </div>
+</section>
+
+<!-- OUTCOMES -->
+<section class="section light section-mark">
+  <div class="section-watermark dark">04</div>
+  <div class="outcomes-grid">
+    <div class="fade-up">
+      <p class="eyebrow dark-text"><span></span> WHAT WE BUILD</p>
+      <h2>A stronger physique.<br>A more capable body.<br><span class="serif">A system that lasts.</span></h2>
+    </div>
+    <div class="outcome-list">
+      <div class="outcome-item fade-up"><span class="outcome-num">01</span><div class="outcome-content"><h3>Glute + physique development</h3><p>Targeted, intelligent programming for the glutes and overall physique — built around your mechanics, not generic formulas.</p></div></div>
+      <div class="outcome-item fade-up"><span class="outcome-num">02</span><div class="outcome-content"><h3>Muscle + strength</h3><p>Progressive overload that respects your joints and recovery. Build real strength that carries into everything you do.</p></div></div>
+      <div class="outcome-item fade-up"><span class="outcome-num">03</span><div class="outcome-content"><h3>Movement quality</h3><p>Move better, tolerate more. We assess what you can do today and build range, control and confidence from there.</p></div></div>
+      <div class="outcome-item fade-up"><span class="outcome-num">04</span><div class="outcome-content"><h3>Nutrition + daily habits</h3><p>Practical sports nutrition and habit coaching that fits your life — not a meal plan you abandon in week two.</p></div></div>
+      <div class="outcome-item fade-up"><span class="outcome-num">05</span><div class="outcome-content"><h3>Training around limitations</h3><p>Angry joints, old injuries, limited range — we work around what you have and build forward without forcing it.</p></div></div>
+      <div class="outcome-item fade-up"><span class="outcome-num">06</span><div class="outcome-content"><h3>Long-term capability</h3><p>Results you maintain. Confidence in the gym. A body that performs now and in ten years. That's the standard.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- COACHING -->
+<section class="section dark section-mark" id="coaching">
+  <div class="section-watermark">05</div>
+  <div class="container">
+    <div class="coaching-header fade-up">
+      <p class="eyebrow light-text"><span></span> COACHING OPTIONS</p>
+      <h2>Choose your level<br><span class="serif">of support.</span></h2>
+    </div>
+    <div class="service-grid">
+      <article class="service-card fade-up">
+        <div class="service-tag"><span>Face-to-face</span></div>
+        <h3>Personal Training</h3>
+        <p class="desc">Premium 45-minute coaching sessions at EMF Home Gym Robina, built entirely around your movement and goals.</p>
+        <ul class="service-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> 1–3 sessions per week</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Full assessment + programming</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Technique coaching + progress reviews</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Nutrition guidance included</li>
+        </ul>
+        <a class="btn-service" href="#contact">Enquire now ↗</a>
+      </article>
+      <article class="service-card featured fade-up">
+        <div class="service-tag"><span>Online flagship</span></div>
+        <h3>Signature Coaching</h3>
+        <p class="desc">A complete remote coaching system for clients who want structure, support and measurable progress — anywhere.</p>
+        <ul class="service-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Weekly or fortnightly check-ins</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Individual training program</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Nutrition + habit coaching</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Exercise technique review</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Ongoing accountability + support</li>
+        </ul>
+        <a class="btn-service" href="#contact">Enquire now ↗</a>
+      </article>
+      <article class="service-card fade-up">
+        <div class="service-tag"><span>Specialist</span></div>
+        <h3>Bespoke Programming</h3>
+        <p class="desc">Focused support for experienced trainees who need a better plan, clearer direction or specialist input.</p>
+        <ul class="service-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Custom training blocks</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Exercise technique review</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Program adjustments as needed</li>
+        </ul>
+        <a class="btn-service" href="#contact">Enquire now ↗</a>
+      </article>
+      <article class="service-card fade-up">
+        <div class="service-tag"><span>Nutrition</span></div>
+        <h3>Nutrition Coaching</h3>
+        <p class="desc">Bespoke nutrition strategy from a registered sports nutritionist — practical, sustainable and built around your goals.</p>
+        <ul class="service-features">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Individual nutrition strategy</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Habit-based behaviour change</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Flexible, sustainable approach</li>
+        </ul>
+        <a class="btn-service" href="#contact">Enquire now ↗</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- PHOTO STRIP -->
+<div class="photo-strip">
+  <div class="photo-strip-img" style="background-image:url('https://base44.app/api/apps/6a5b36331febe257897d936b/files/mp/public/6a5b36331febe257897d936b/f4b8179c3_ad25895cb_IMG_09012.jpg');background-position:center 25%"></div>
+  <div class="photo-strip-img" style="background-image:url('https://base44.app/api/apps/6a5b36331febe257897d936b/files/mp/public/6a5b36331febe257897d936b/50b8c5ec3_7537a11c0_IMG_1097.jpg');background-position:center center"></div>
+  <div class="photo-strip-img" style="background-image:url('https://base44.app/api/apps/6a5b36331febe257897d936b/files/mp/public/6a5b36331febe257897d936b/40602b50d_f5eb6da5b_IMG_1090.jpg');background-position:center 20%"></div>
+</div>
+
+<!-- ONBOARDING -->
+<section class="onboarding dark section-mark">
+  <div class="section-watermark">06</div>
+  <div class="container">
+    <div style="text-align:center" class="fade-up">
+      <p class="eyebrow light-text" style="justify-content:center"><span></span> HOW IT WORKS</p>
+      <h2 style="font-family:var(--display);font-size:clamp(1.8rem,4.5vw,3.5rem);font-weight:700;letter-spacing:-.03em;margin-top:1rem;line-height:1">Three steps to <span class="serif" style="color:var(--acid)">getting started.</span></h2>
+    </div>
+    <div class="onboarding-grid">
+      <div class="onboarding-step fade-up">
+        <div class="onboarding-num">01</div>
+        <h3>Enquire</h3>
+        <p>Reach out via the form, WhatsApp, or Instagram. Tell us where you are and what you're working toward. Joshua responds personally.</p>
+      </div>
+      <div class="onboarding-step fade-up">
+        <div class="onboarding-num">02</div>
+        <h3>Assess</h3>
+        <p>We book a consultation — in person at EMF Robina or online. Full intake: goals, history, movement, lifestyle, what your body can tolerate.</p>
+      </div>
+      <div class="onboarding-step fade-up">
+        <div class="onboarding-num">03</div>
+        <h3>Build</h3>
+        <p>Your program is built from the ground up. Training, nutrition, and habits — a system that evolves with you. Start training with purpose.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-photo"><div class="about-badge">📍 EMF HOME GYM · ROBINA · GOLD COAST</div></div>
+  <div class="about-content">
+    <p class="eyebrow light-text"><span></span> YOUR COACH</p>
+    <h2>Joshua<br>Burridge.</h2>
+    <p>My journey has taken me from professional kitchens to the Royal Australian Navy, through bodybuilding and strength sports, and ultimately into coaching with a passion for developing human performance.</p>
+    <p>Becoming a father at 22 reshaped my perspective on health, resilience and what it truly means to perform. It reinforced a philosophy that lasting progress is built through consistency, ownership and purposeful action — principles that became the foundation of KOVA.</p>
+    <p>My coaching is built on an evidence-informed approach to biomechanics, movement quality, strength development and hypertrophy. Rather than relying on generic programs, I assess how each individual moves, adapts and progresses — creating training tailored to your goals, lifestyle and training history.</p>
+    <div class="about-stats">
+      <div><div class="about-stat-num">45<span style="font-size:1.1rem">MIN</span></div><div class="about-stat-label">Session length</div></div>
+      <div><div class="about-stat-num">100%</div><div class="about-stat-label">Personalised</div></div>
+      <div><div class="about-stat-num">1:1</div><div class="about-stat-label">Coaching ratio</div></div>
+    </div>
+    <div class="credentials">
+      <p>Prescript Level 1 — Prescript Barbell Course</p>
+      <p>SNA Applied Sports Nutrition</p>
+      <p>Registered Sports Nutritionist</p>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section class="philosophy dark">
+  <div class="philosophy-inner">
+    <p class="eyebrow light-text" style="justify-content:center"><span></span> THE KOVA STANDARD</p>
+    <h2>Small actions.<br><span class="serif">Extraordinary outcomes.</span></h2>
+    <p>The goal isn't simply to build a stronger body — it's to build one that moves well, performs under load and remains capable for years to come.</p>
+    <p>Whether your focus is muscle growth, fat loss, strength or improving overall performance, KOVA combines intelligent programming, practical nutrition and sustainable habits to deliver results that last.</p>
+    <p style="font-size:1.2rem;font-weight:700;color:var(--acid);margin-top:2rem;font-family:var(--display);text-transform:uppercase;letter-spacing:.02em">Build with purpose. Fuel with intention. <span class="serif">Perform for life.</span></p>
+    <p class="b4b-mark">BodyBUILDING B4 BodyBreaking</p>
+    <div class="philosophy-cta">
+      <a href="https://linktr.ee/TEAM.KOVA_COACHING" target="_blank" class="btn-primary">Book a consultation ↗</a>
+      <a href="#contact" class="btn-outline">Enquire online</a>
+    </div>
+  </div>
+</section>
+
+<!-- INFLUENCES -->
+<section class="influences dark">
+  <div class="container">
+    <p class="eyebrow light-text" style="display:block;text-align:center"><span></span> EDUCATIONAL INFLUENCES</p>
+    <p style="text-align:center;color:rgba(255,255,255,.4);font-size:.88rem;margin-top:1rem;font-family:var(--body)">Integrated into the KOVA coaching system — not copied, but built upon.</p>
+    <div class="influences-grid">
+      <div class="influence-tag">Prescript</div>
+      <div class="influence-tag">Muscle Nerds</div>
+      <div class="influence-tag">Reactive Training Systems</div>
+      <div class="influence-tag">Ian King</div>
+      <div class="influence-tag">JP's Academy</div>
+      <div class="influence-tag">BodyBUILDING B4 BodyBreaking</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact light" id="contact">
+  <div class="contact-inner">
+    <p class="eyebrow dark-text"><span></span> START HERE</p>
+    <h2>Ready to train<br><span class="serif">with purpose?</span></h2>
+    <p class="contact-lead">Tell us where you are, where you want to go, and what's been getting in the way. Joshua responds personally to every enquiry.</p>
+
+    <div class="contact-links">
+      <a href="https://linktr.ee/TEAM.KOVA_COACHING" target="_blank" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        Linktree · In-Person Consultations
+      </a>
+      <a href="https://wa.me/61417761424" target="_blank" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        WhatsApp
+      </a>
+      <a href="https://instagram.com/teamkovacoaching" target="_blank" class="contact-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        Instagram
+      </a>
+    </div>
+
+    <div class="contact-info">
+      <div class="contact-info-item"><span class="contact-info-label">Location</span><span class="contact-info-value">EMF Home Gym, Robina Home Hub, 20 Scottsdale Dr, Robina QLD</span></div>
+      <div class="contact-info-item"><span class="contact-info-label">Online</span><span class="contact-info-value">Available worldwide</span></div>
+    </div>
+
+    <form name="coaching-enquiry" data-netlify="true" netlify-honeypot="bot-field" method="POST">
+      <input type="hidden" name="form-name" value="coaching-enquiry"/>
+      <p class="hidden-field"><label>Don't fill this out: <input name="bot-field"/></label></p>
+      <div class="field-row">
+        <label>First name<input type="text" placeholder="Your name" required name="first-name"/></label>
+        <label>Email address<input type="email" placeholder="you@email.com" required name="email"/></label>
+      </div>
+      <div class="field-row">
+        <label>Phone<input type="tel" placeholder="04xx xxx xxx" name="phone"/></label>
+        <label>Coaching interest<select name="coaching-interest" required>
+          <option value="" disabled selected>Select an option</option>
+          <option>Face-to-face personal training</option>
+          <option>KOVA Signature online coaching</option>
+          <option>Bespoke programming</option>
+          <option>Nutrition coaching</option>
+          <option>Not sure yet</option>
+        </select></label>
+      </div>
+      <label>What are you working toward?<textarea name="goals" rows="4" placeholder="Share your goals, training experience, or anything currently holding you back." required></textarea></label>
+      <button class="submit-btn" type="submit">Start the conversation ↗</button>
+      <p class="form-note">No pressure. No generic sales pitch. Just a clear conversation about your next step.</p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">KOVA<span>.</span></div>
+      <p class="footer-tagline">The pursuit of human performance. Premium personal training and online coaching from the Gold Coast.</p>
+      <div class="footer-social">
+        <a href="https://instagram.com/teamkovacoaching" target="_blank" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg></a>
+        <a href="https://wa.me/61417761424" target="_blank" aria-label="WhatsApp"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+        <a href="https://linktr.ee/TEAM.KOVA_COACHING" target="_blank" aria-label="Linktree"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Coaching</h4>
+      <a href="#coaching">Personal training</a>
+      <a href="#coaching">Signature online coaching</a>
+      <a href="#coaching">Bespoke programming</a>
+      <a href="#coaching">Nutrition coaching</a>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <a href="#method">The KOVA method</a>
+      <a href="#kova-meaning">What KOVA means</a>
+      <a href="#about">About Joshua</a>
+      <a href="#contact">Enquire</a>
+    </div>
+    <div class="footer-col">
+      <h4>Connect</h4>
+      <a href="https://linktr.ee/TEAM.KOVA_COACHING" target="_blank">Linktree · Book a consult</a>
+      <a href="https://wa.me/61417761424" target="_blank">WhatsApp</a>
+      <a href="https://instagram.com/teamkovacoaching" target="_blank">Instagram</a>
+    </div>
+  </div>
+  <div class="footer-tagline-bar">
+    <p>BUILD <span>—</span> FUEL <span>—</span> PERFORM<span>®</span></p>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 KOVA Coaching. The pursuit of human performance.</p>
+    <p>EMF Home Gym · Robina · Gold Coast · Online</p>
+  </div>
+</footer>
+
+<script>
+var header = document.getElementById('header');
+window.addEventListener('scroll', function() { header.classList.toggle('scrolled', window.scrollY > 50); });
+var menuBtn = document.getElementById('menuBtn');
+var mobileMenu = document.getElementById('mobileMenu');
+menuBtn.addEventListener('click', function() { mobileMenu.classList.toggle('open'); });
+mobileMenu.querySelectorAll('a').forEach(function(a) { a.addEventListener('click', function() { mobileMenu.classList.remove('open'); }); });
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.fade-up').forEach(function(el) { observer.observe(el); });
+document.querySelector('form[name="coaching-enquiry"]').addEventListener('submit', function(e) {
+  e.preventDefault();
+  var formData = new FormData(this);
+  fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(formData).toString() })
+  .then(function() { alert('Thanks for reaching out. Joshua will get back to you personally within 24 hours.'); document.querySelector('form[name="coaching-enquiry"]').reset(); })
+  .catch(function() { alert('Something went wrong. Please try again or reach out via WhatsApp or Instagram.'); });
+});
+</script>
+
+</body>
+</html>
