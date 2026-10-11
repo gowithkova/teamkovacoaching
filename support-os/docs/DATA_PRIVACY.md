@@ -1,10 +1,11 @@
 # Data privacy
 
 This app is designed, from Gate 1 onward, as if it will eventually hold
-health-adjacent information about real people (support-work clients), even
-though **nothing in this Gate-1 build stores anything beyond a browser
-tab's in-memory React state**. This document describes the target posture
-and what's actually true today.
+health-adjacent information about real people (support-work clients). As of
+Gate 2 (in progress), Leads is the first screen actually backed by a real
+database with row-level security; every other screen still only holds
+synthetic, in-memory data. This document describes the target posture and
+what's actually true today.
 
 ## Classification
 
@@ -18,43 +19,61 @@ and what's actually true today.
   approved/excluded activity list and a short instruction string, per
   blueprint §5.3's minimal-data rule.
 
-## Current state (Gate 1)
+## Current state (Gate 2, in progress)
 
-- **No persistence.** `src/lib/store.tsx` is a plain React context backed
-  by `useState`. Closing the tab or reloading loses everything. Nothing is
-  written to `localStorage`, a database, or any network request.
-- **No authentication.** There is no login; anyone with the URL who opens
-  the deployed Gate-1 build sees the synthetic demo data. This is
-  acceptable only because the data is 100% synthetic (see
-  `src/lib/fixtures.ts`'s header comment) — it must not be true once real
-  client data is involved.
+- **Leads is persisted; everything else is not.** Leads (and the
+  organisations it references) live in Postgres behind Supabase, scoped by
+  Row Level Security to `owner_id = auth.uid()` — see `supabase/schema.sql`
+  and the RLS verification notes in `docs/DECISIONS.md`. Clients, Calendar,
+  Sessions, Money, Documents and Settings are still `src/lib/store.tsx`, a
+  plain React context backed by `useState`: closing the tab or reloading
+  loses that data, and nothing there is written to `localStorage`, a
+  database, or any network request.
+- **Authentication is now required for every screen.** `src/proxy.ts` +
+  `src/lib/supabase/middleware.ts` redirect any unauthenticated request to
+  `/login`, regardless of whether the destination screen's own data is
+  real or still synthetic. `/signup` creates the single operator account —
+  it is not a public signup flow (see blueprint §5: "No public signup...
+  in V1") and should not be linked from anywhere public-facing.
+- **RLS, not just UI logic, enforces per-owner isolation** on every
+  Gate 2 table. This was verified directly against a real (local) Postgres
+  instance before being trusted: a second simulated account could not see,
+  update, or delete the first account's rows — see `docs/DECISIONS.md` for
+  the specific checks run.
 - **No analytics, no logging of content.** No client-side analytics SDK is
-  installed. The dev server's own request logs are standard Next.js access
-  logs (method/path/status), not application data.
+  installed. Server Actions don't log request bodies; Supabase's own
+  server-side logs are outside this app's control — review Supabase's own
+  logging/retention settings before putting real client data in.
 - **No outbound network calls carry client data.** The only outbound link
   this app opens is a Google Maps search by *suburb name* (Today's
   "Directions" button) — never a full address, never a client name.
 
-## Target state (from Gate 2 — see blueprint §10)
+## Target state (full Gate 2+ — see blueprint §10)
 
-- Authenticated access only, MFA supported, no shared logins.
-- PostgreSQL Row Level Security scoping every row to the authenticated
-  operator, tested server-side (not just hidden in the UI).
+- MFA support (not yet wired up — Supabase Auth supports TOTP MFA
+  natively; enabling it is a Gate 2 follow-up, not blocked on anything
+  built so far).
 - TLS in transit, managed encryption at rest, encrypted object storage for
-  documents; time-limited signed URLs for any document download.
+  documents; time-limited signed URLs for any document download (Gate 4).
 - Client medical/health detail, addresses, banking details and incident
   narratives never logged to analytics, error trackers, terminals, or sent
   to an external AI model by default.
 - Append-only audit trail on invoice issuance, document access, status
-  approvals, note corrections and incident updates.
+  approvals, note corrections and incident updates. `service_notes` already
+  has a taste of this — its RLS policy only grants `select`/`insert`, no
+  `update`/`delete`, so a written note cannot be silently edited through
+  the API. A full audit log table is still Gate 4.
 - A documented retention/deletion policy, reviewed against Australian
   Privacy Act obligations before go-live (see `REGULATORY_ASSUMPTIONS.md`
   item 9).
-- Demo/seed data stays synthetic forever — `fixtures.ts` must never be
-  swapped for a real export "just for testing".
+- Demo/seed data stays synthetic forever — `fixtures.ts` and
+  `supabase/seed.sql` must never be swapped for a real export "just for
+  testing".
 
 ## Retention & deletion
 
-Not yet applicable — there is nothing to retain or delete in Gate 1. This
-section will be filled in once Gate 2 introduces a real database, informed
-by a proportionate legal review as the blueprint requires.
+Not yet applicable to the still-in-memory screens. For Leads: no retention
+policy is implemented yet — rows persist indefinitely until manually
+deleted via Supabase. A documented policy, informed by a proportionate
+legal review, is still owed before any real client data goes in (see
+`REGULATORY_ASSUMPTIONS.md` item 9).

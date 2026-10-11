@@ -5,6 +5,7 @@ import { useStore } from "@/lib/store";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import { TextField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { logout } from "@/app/login/actions";
 
 export default function SettingsPage() {
   const { settings, updateSettings } = useStore();
@@ -13,6 +14,15 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-4">
+      <Card>
+        <CardHeader><CardTitle>Account</CardTitle></CardHeader>
+        <CardBody>
+          <form action={logout}>
+            <Button type="submit" variant="secondary">Sign out</Button>
+          </form>
+        </CardBody>
+      </Card>
+
       <Card>
         <CardHeader><CardTitle>Business profile</CardTitle></CardHeader>
         <CardBody className="space-y-3">

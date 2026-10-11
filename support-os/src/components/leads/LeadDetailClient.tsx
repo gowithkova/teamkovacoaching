@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
@@ -11,7 +11,9 @@ import {
   LEAD_STATUS_LABEL,
   LEAD_TYPE_LABEL,
   LEAD_PIPELINE_ORDER,
+  type Lead,
   type LeadStatus,
+  type Organisation,
 } from "@/lib/types";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -21,6 +23,7 @@ import { TemplateBox } from "@/components/shared/TemplateBox";
 import { leadFitScore } from "@/lib/leadFit";
 import { formatCents } from "@/lib/money";
 import { formatDateShort } from "@/lib/dates";
+import { setLeadStatus, addLeadActivity } from "@/lib/db/leads";
 import {
   declineReferral,
   enquiryAcknowledgment,
@@ -31,10 +34,10 @@ import {
 
 const ALL_STATUSES: LeadStatus[] = [...LEAD_PIPELINE_ORDER, "lost", "not_suitable", "archived"];
 
-export function LeadDetailClient({ id }: { id: string }) {
+export function LeadDetailClient({ lead, organisations }: { lead: Lead | null; organisations: Organisation[] }) {
   const router = useRouter();
-  const { leads, organisations, settings, setLeadStatus, addLeadActivity, convertLeadToClient } = useStore();
-  const lead = leads.find((l) => l.id === id);
+  const { settings } = useStore();
+  const [isPending, startTransition] = useTransition();
   const [note, setNote] = useState("");
   const [declineReason, setDeclineReason] = useState("");
   const [showDecline, setShowDecline] = useState(false);
@@ -62,14 +65,28 @@ export function LeadDetailClient({ id }: { id: string }) {
     { key: "decline", label: "I cannot safely provide that service", text: declineReferral(lead) },
   ];
 
-  function handleConvert() {
-    const clientId = convertLeadToClient(leadId);
-    router.push(`/clients/${clientId}`);
+  function handleStatusChange(status: LeadStatus) {
+    startTransition(async () => {
+      await setLeadStatus(leadId, status);
+      router.refresh();
+    });
   }
 
   function handleDecline() {
-    setLeadStatus(leadId, "not_suitable", declineReason || "Declined — outside scope/qualifications.");
-    setShowDecline(false);
+    startTransition(async () => {
+      await setLeadStatus(leadId, "not_suitable", declineReason || "Declined — outside scope/qualifications.");
+      setShowDecline(false);
+      router.refresh();
+    });
+  }
+
+  function handleLogActivity() {
+    if (!note.trim()) return;
+    startTransition(async () => {
+      await addLeadActivity(leadId, note.trim());
+      setNote("");
+      router.refresh();
+    });
   }
 
   return (
@@ -96,7 +113,8 @@ export function LeadDetailClient({ id }: { id: string }) {
           <SelectField
             label="Pipeline status"
             value={lead.status}
-            onChange={(e) => setLeadStatus(lead.id, e.target.value as LeadStatus)}
+            disabled={isPending}
+            onChange={(e) => handleStatusChange(e.target.value as LeadStatus)}
           >
             {ALL_STATUSES.map((s) => (
               <option key={s} value={s}>{LEAD_STATUS_LABEL[s]}</option>
@@ -106,12 +124,13 @@ export function LeadDetailClient({ id }: { id: string }) {
             <p className="rounded-md bg-amber-soft px-3 py-2 text-sm text-amber">{lead.statusReason}</p>
           )}
           {lead.convertedClientId ? (
-            <Link href={`/clients/${lead.convertedClientId}`} className="inline-block">
-              <Button variant="secondary">View client record</Button>
-            </Link>
+            <p className="text-sm text-ink-soft">Converted to a client record.</p>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              <Button variant="primary" onClick={handleConvert}>Convert to client</Button>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="primary" disabled title="Lands once the Clients screen is also persisted (next step)">
+                Convert to client
+              </Button>
+              <span className="text-xs text-ink-faint">Convert-to-client lands with the Clients migration.</span>
               <Button variant="danger" onClick={() => setShowDecline((v) => !v)}>Decline / not suitable</Button>
             </div>
           )}
@@ -123,7 +142,7 @@ export function LeadDetailClient({ id }: { id: string }) {
                 onChange={(e) => setDeclineReason(e.target.value)}
                 placeholder="e.g. Requires personal care and medication administration — outside scope."
               />
-              <Button variant="danger" size="sm" onClick={handleDecline}>Confirm decline</Button>
+              <Button variant="danger" size="sm" onClick={handleDecline} disabled={isPending}>Confirm decline</Button>
             </div>
           )}
         </CardBody>
@@ -204,15 +223,7 @@ export function LeadDetailClient({ id }: { id: string }) {
               className="flex-1"
             />
           </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              if (!note.trim()) return;
-              addLeadActivity(lead.id, note.trim());
-              setNote("");
-            }}
-          >
+          <Button variant="secondary" size="sm" onClick={handleLogActivity} disabled={!note.trim() || isPending}>
             Log activity
           </Button>
           <ul className="space-y-1.5 text-sm">

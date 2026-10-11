@@ -71,6 +71,86 @@ hand-authored in fixtures — it falls out of the same data every other
 screen reads, so marking a session reviewed or issuing an invoice
 immediately changes the queue without extra wiring.
 
+## 2026-10-12 — Gate 2 architecture: Server Components + Server Actions, not a client store
+
+Gate 1's `DataStoreProvider` (client-side React context + `useState`) was
+the right call for a backend-less synthetic prototype, but it's the wrong
+foundation for real persistence — a client-side global store fed by
+client-side Supabase calls would mean every screen re-fetches on mount,
+loses the benefit of server-side rendering, and has to hand-roll its own
+cache invalidation. Gate 2 instead follows the blueprint's own suggested
+stack: pages that need real data become `async` Server Components that
+fetch via `src/lib/supabase/server.ts`; mutations are Server Actions
+(`"use server"` modules under `src/lib/db/`) that write to Supabase and
+call `revalidatePath` so the next render picks up fresh data. Client
+components stay responsible only for interactivity (tabs, forms, optimistic
+pending state via `useTransition`), not for owning the data.
+
+This means a screen is migrated or it isn't — there's no in-between where
+part of a screen reads the old store and part reads Postgres for the *same*
+entity. Leads is now fully on the new pattern; every other screen is fully
+on the old one. See the next two entries for what that split currently
+costs.
+
+## 2026-10-12 — Leads-only migration leaves a known, bounded inconsistency
+
+Converting a lead to a client is disabled in the UI (`LeadDetailClient`'s
+"Convert to client" button), not implemented against the old in-memory
+store. The alternative — writing the new client into `useStore()`'s fixture
+array — would create a persisted Postgres lead pointing at a client that
+exists only in one browser tab's memory, which is worse than not offering
+the feature yet. It comes back once Clients is also migrated.
+
+Today's priority queue, income forecast and the top summary bar still read
+leads from `useStore()` (Gate 1 fixtures), not the real `leads` table —
+so a lead created or updated via the new Postgres-backed Leads screens
+will not yet show up in Today's "follow up this lead" tasks. This is a
+deliberate, bounded scope decision for the reference-implementation slice,
+not an oversight: Today pulls data from six Gate-1 entities
+(sessions/engagements/clients/leads/invoices/credentials), and migrating
+just its lead-sourced tasks while the other five stay on fixtures would be
+more confusing than leaving all of Today on Gate 1 until the broader
+migration (task: "Migrate Clients, Calendar, Sessions") lands and Today can
+move over as a whole.
+
+## 2026-10-12 — Schema verified directly against Postgres; live Supabase round-trip still unverified
+
+`supabase/schema.sql` was run against a real local PostgreSQL 16 instance
+(not just read for syntax), with Supabase's `auth.users`/`auth.uid()`
+stood in by a minimal stub (`stub_auth.sql`, not committed — a throwaway
+test fixture) and the `authenticated` role granted the same table
+privileges Supabase grants by default, so RLS was exercised for real, not
+assumed. Checks that actually ran and passed:
+
+- The `handle_new_user` trigger auto-creates an `operator_profiles` row on
+  signup, and picks up `trading_name` from signup metadata when present.
+- Two simulated accounts: account B sees zero of account A's rows across
+  every table, including `operator_profiles` — RLS cross-account isolation
+  holds, not just "looks right" on paper.
+- `service_notes` has no UPDATE policy: an UPDATE from the owning account
+  affects 0 rows and the original text survives — the "can't tamper with a
+  written note" guarantee is enforced at the database, not just hidden in
+  the UI.
+- The `planned_end > planned_start` CHECK constraint actually rejects a
+  backwards session.
+- Deleting a client cascades correctly through engagements → sessions →
+  service_notes, under RLS (not just as the bypassing table owner).
+- `append_lead_activity(uuid, text)` appends atomically and in order
+  under the `authenticated` role, with `last_contact_at` updated alongside.
+
+What this does **not** cover: the actual Supabase Auth (GoTrue) sign-up/
+sign-in flow, or the real PostgREST HTTP layer that `@supabase/supabase-js`
+talks to — Docker is unavailable in this environment (the daemon can't
+start under the sandbox's restrictions), which ruled out running the full
+local Supabase stack (`supabase start`) to test those end-to-end. The
+`src/lib/supabase/{client,server,middleware}.ts` files follow the same
+pattern already proven working in the sibling `pt-readiness-scorecard`
+repo's Family Wizard app (same org, same stack), which is meaningful but
+not a substitute for testing this project's own schema against it. This is
+the reason Gate 2 paused after the Leads slice: verify the live round-trip
+on one screen with real credentials before replicating the same schema/RLS
+pattern across Clients, Calendar and Sessions.
+
 ## 2026-10-12 — Fixture schedule is weekday-anchored, not offset-anchored
 
 Early fixtures put recurring sessions at fixed day-offsets from "today"
