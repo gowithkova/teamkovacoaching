@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Phone } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
@@ -10,29 +11,38 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { TextAreaField, TextField } from "@/components/ui/Field";
 import { SESSION_STATUS_LABEL } from "@/lib/types";
+import type { AvailabilityBlock, Client, Contact, Engagement, ServiceNote, VisitSession } from "@/lib/types";
 import { formatDateLong, formatTimeRange } from "@/lib/dates";
 import { detectSessionConflicts } from "@/lib/conflicts";
-import { formatCents } from "@/lib/money";
+import {
+  confirmSession as confirmSessionAction,
+  correctSessionTimes as correctSessionTimesAction,
+  recordCancellation as recordCancellationAction,
+  completeSessionWithNote,
+  startSession as startSessionAction,
+} from "@/lib/db/sessions";
 
-export function SessionDetailClient({ id }: { id: string }) {
-  const store = useStore();
-  const {
-    sessions,
-    clients,
-    engagements,
-    contacts,
-    serviceNotes,
-    invoices,
-    confirmSession,
-    startSession,
-    completeSession,
-    correctSessionTimes,
-    recordCancellation,
-    createDraftInvoiceFromSessions,
-    addIncident,
-  } = store;
+export function SessionDetailClient({
+  session,
+  client,
+  engagement,
+  contacts,
+  note,
+  allSessions,
+  availabilityBlocks,
+}: {
+  session: VisitSession | null;
+  client?: Client;
+  engagement?: Engagement;
+  contacts: Contact[];
+  note?: ServiceNote;
+  allSessions: VisitSession[];
+  availabilityBlocks: AvailabilityBlock[];
+}) {
+  const router = useRouter();
+  const { addIncident } = useStore(); // Incidents/Documents aren't persisted yet (Gate 4) — kept on the Gate 1 store deliberately.
+  const [isPending, startTransition] = useTransition();
 
-  const session = sessions.find((s) => s.id === id);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [noteDraft, setNoteDraft] = useState({ activities: "", participantResponse: "", factualObservations: "", nextSteps: "" });
   const [showCancel, setShowCancel] = useState(false);
@@ -61,39 +71,47 @@ export function SessionDetailClient({ id }: { id: string }) {
     );
   }
 
-  const client = clients.find((c) => c.id === session.clientId);
-  const engagement = engagements.find((e) => e.id === session.engagementId);
-  const note = serviceNotes.find((n) => n.id === session.noteId);
-  const invoice = session.invoiceLineId ? invoices.find((inv) => inv.lines.some((l) => l.id === session.invoiceLineId)) : undefined;
+  const sessionId = session.id;
   const emergencyContact = contacts.find((c) => c.clientId === session.clientId && c.role === "emergency_contact") ?? contacts.find((c) => c.clientId === session.clientId);
-  const conflicts = detectSessionConflicts(session, sessions, store.availabilityBlocks);
+  const conflicts = detectSessionConflicts(session, allSessions, availabilityBlocks);
 
   const minutes = Math.floor(elapsedMs / 60_000);
   const seconds = Math.floor((elapsedMs % 60_000) / 1000);
 
+  function runAction(action: () => Promise<void>) {
+    startTransition(async () => {
+      await action();
+      router.refresh();
+    });
+  }
+
   function handleFinish() {
-    completeSession(session!.id, noteDraft);
+    if (!noteDraft.activities.trim()) return;
+    runAction(() => completeSessionWithNote(sessionId, noteDraft));
   }
 
   function handleSubmitCancellation() {
-    recordCancellation(session!.id, cancelReason, cancelChargeable, cancelChargeable ? "Within the agreed short-notice window." : "Outside the chargeable window / goodwill.");
+    runAction(() =>
+      recordCancellationAction(
+        sessionId,
+        cancelReason,
+        cancelChargeable,
+        cancelChargeable ? "Within the agreed short-notice window." : "Outside the chargeable window / goodwill.",
+      ),
+    );
     setShowCancel(false);
   }
 
   function handleReportConcern() {
     addIncident({
       clientId: session!.clientId,
-      sessionId: session!.id,
+      sessionId: sessionId,
       occurredAt: new Date().toISOString(),
       factualDescription: concernText,
       immediateActions: "Logged during visit via quick action.",
     });
     setConcernText("");
     setShowConcern(false);
-  }
-
-  function handleCreateInvoice() {
-    createDraftInvoiceFromSessions(session!.clientId, [session!.id]);
   }
 
   const canInvoice = engagement?.readinessState === "green";
@@ -153,12 +171,12 @@ export function SessionDetailClient({ id }: { id: string }) {
         <CardBody className="flex flex-wrap items-center justify-between gap-3 pt-4">
           <div className="flex gap-2">
             {(session.status === "proposed" || session.status === "tentative") && (
-              <Button variant="primary" disabled={conflicts.length > 0} onClick={() => confirmSession(session.id)}>
+              <Button variant="primary" disabled={conflicts.length > 0 || isPending} onClick={() => runAction(() => confirmSessionAction(sessionId))}>
                 Confirm visit
               </Button>
             )}
             {session.status === "confirmed" && (
-              <Button variant="primary" onClick={() => startSession(session.id)}>Start visit</Button>
+              <Button variant="primary" disabled={isPending} onClick={() => runAction(() => startSessionAction(sessionId))}>Start visit</Button>
             )}
             {session.status === "in_progress" && (
               <span className="tabular text-lg font-semibold text-ink">
@@ -190,7 +208,7 @@ export function SessionDetailClient({ id }: { id: string }) {
             <TextAreaField label="Participation / response (incl. client feedback if appropriate)" rows={2} value={noteDraft.participantResponse} onChange={(e) => setNoteDraft((d) => ({ ...d, participantResponse: e.target.value }))} />
             <TextAreaField label="Changes or concerns observed (factual only)" rows={2} value={noteDraft.factualObservations} onChange={(e) => setNoteDraft((d) => ({ ...d, factualObservations: e.target.value }))} />
             <TextAreaField label="Actions / follow-up" rows={2} value={noteDraft.nextSteps} onChange={(e) => setNoteDraft((d) => ({ ...d, nextSteps: e.target.value }))} />
-            <Button variant="primary" onClick={handleFinish} disabled={!noteDraft.activities.trim()}>Finish visit</Button>
+            <Button variant="primary" onClick={handleFinish} disabled={!noteDraft.activities.trim() || isPending}>Finish visit</Button>
           </CardBody>
         </Card>
       )}
@@ -203,7 +221,7 @@ export function SessionDetailClient({ id }: { id: string }) {
             <TextAreaField label="Participation / response (incl. client feedback if appropriate)" rows={2} value={noteDraft.participantResponse} onChange={(e) => setNoteDraft((d) => ({ ...d, participantResponse: e.target.value }))} />
             <TextAreaField label="Changes or concerns observed (factual only)" rows={2} value={noteDraft.factualObservations} onChange={(e) => setNoteDraft((d) => ({ ...d, factualObservations: e.target.value }))} />
             <TextAreaField label="Actions / follow-up" rows={2} value={noteDraft.nextSteps} onChange={(e) => setNoteDraft((d) => ({ ...d, nextSteps: e.target.value }))} />
-            <Button variant="primary" onClick={handleFinish} disabled={!noteDraft.activities.trim()}>Save note</Button>
+            <Button variant="primary" onClick={handleFinish} disabled={!noteDraft.activities.trim() || isPending}>Save note</Button>
           </CardBody>
         </Card>
       )}
@@ -227,24 +245,12 @@ export function SessionDetailClient({ id }: { id: string }) {
 
       {note && !session.invoiceLineId && (
         <Card>
-          <CardBody className="flex items-center justify-between pt-4">
+          <CardBody className="pt-4">
             {canInvoice ? (
-              <>
-                <p className="text-sm text-ink-soft">Ready to invoice.</p>
-                <Button variant="primary" onClick={handleCreateInvoice}>Create draft invoice</Button>
-              </>
+              <p className="text-sm text-ink-soft">Ready to invoice — invoicing is still Gate 1&apos;s synthetic data and isn&apos;t linked to real sessions yet, lands with the Money migration (Gate 3).</p>
             ) : (
               <p className="text-sm text-amber">Cannot invoice yet — engagement has an unresolved blocker. See the client&apos;s Service tab.</p>
             )}
-          </CardBody>
-        </Card>
-      )}
-
-      {invoice && (
-        <Card>
-          <CardBody className="flex items-center justify-between pt-4 text-sm">
-            <span>Invoice {invoice.number}</span>
-            <Link href="/money" className="text-accent-strong hover:underline">Open in Money</Link>
           </CardBody>
         </Card>
       )}
@@ -268,7 +274,7 @@ export function SessionDetailClient({ id }: { id: string }) {
             <input type="checkbox" checked={cancelChargeable} onChange={(e) => setCancelChargeable(e.target.checked)} />
             Chargeable under the agreed cancellation terms
           </label>
-          <Button variant="danger" onClick={handleSubmitCancellation} disabled={!cancelReason.trim()}>Confirm cancellation</Button>
+          <Button variant="danger" onClick={handleSubmitCancellation} disabled={!cancelReason.trim() || isPending}>Confirm cancellation</Button>
         </div>
       </Modal>
 
@@ -287,8 +293,9 @@ export function SessionDetailClient({ id }: { id: string }) {
           <p className="text-xs text-ink-faint">Manual corrections are kept in the audit trail (full audit log lands in Gate 4).</p>
           <Button
             variant="primary"
+            disabled={isPending}
             onClick={() => {
-              correctSessionTimes(session.id, correctStart, correctEnd);
+              runAction(() => correctSessionTimesAction(sessionId, correctStart, correctEnd));
               setShowCorrect(false);
             }}
           >
@@ -296,10 +303,6 @@ export function SessionDetailClient({ id }: { id: string }) {
           </Button>
         </div>
       </Modal>
-
-      {invoice && (
-        <p className="text-xs text-ink-faint">Invoice total: {formatCents(invoice.lines.reduce((a, l) => a + l.amountCents, 0))}</p>
-      )}
     </div>
   );
 }

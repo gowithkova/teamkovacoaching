@@ -2,10 +2,10 @@
 
 This app is designed, from Gate 1 onward, as if it will eventually hold
 health-adjacent information about real people (support-work clients). As of
-Gate 2 (in progress), Leads is the first screen actually backed by a real
-database with row-level security; every other screen still only holds
-synthetic, in-memory data. This document describes the target posture and
-what's actually true today.
+Gate 2 (in progress), Leads, Clients, Calendar and Sessions are backed by a
+real database with row-level security; Money, Documents and Settings still
+only hold synthetic, in-memory data. This document describes the target
+posture and what's actually true today.
 
 ## Classification
 
@@ -21,14 +21,21 @@ what's actually true today.
 
 ## Current state (Gate 2, in progress)
 
-- **Leads is persisted; everything else is not.** Leads (and the
-  organisations it references) live in Postgres behind Supabase, scoped by
-  Row Level Security to `owner_id = auth.uid()` — see `supabase/schema.sql`
-  and the RLS verification notes in `docs/DECISIONS.md`. Clients, Calendar,
-  Sessions, Money, Documents and Settings are still `src/lib/store.tsx`, a
-  plain React context backed by `useState`: closing the tab or reloading
-  loses that data, and nothing there is written to `localStorage`, a
-  database, or any network request.
+- **Leads, Clients, Calendar and Sessions are persisted; Money, Documents
+  and Settings are not.** Leads, organisations, clients, contacts,
+  engagements, availability blocks, sessions and service notes live in
+  Postgres behind Supabase, scoped by Row Level Security to
+  `owner_id = auth.uid()` — see `supabase/schema.sql` and the RLS
+  verification notes in `docs/DECISIONS.md`. Money, Documents and Settings
+  are still `src/lib/store.tsx`, a plain React context backed by
+  `useState`: closing the tab or reloading loses that data, and nothing
+  there is written to `localStorage`, a database, or any network request.
+  Two screens straddle the boundary deliberately: on Clients, the invoices
+  and safety/incidents tabs show placeholder text rather than fixture data
+  that can't match a real client's UUID; on Sessions, "report a concern"
+  still writes to the Gate 1 incident store (harmless, since incidents
+  aren't persisted anywhere yet either way) and draft-invoice creation is
+  a placeholder until Money is migrated.
 - **Authentication is now required for every screen.** `src/proxy.ts` +
   `src/lib/supabase/middleware.ts` redirect any unauthenticated request to
   `/login`, regardless of whether the destination screen's own data is
@@ -47,6 +54,23 @@ what's actually true today.
 - **No outbound network calls carry client data.** The only outbound link
   this app opens is a Google Maps search by *suburb name* (Today's
   "Directions" button) — never a full address, never a client name.
+- **The Google Sheets companion holds synthetic data only.** Built as an
+  interim workaround while the live Supabase project was being provisioned,
+  `KOVA Support OS — Data Tracker` mirrors the Gate 2 schema 1:1 but is
+  seeded only from `supabase/seed.sql`'s synthetic rows and is not wired to
+  the app or written to by it. It must never be used to store real client
+  data — once the live database is in regular use it should be treated as
+  a disposable reference, not a second system of record.
+- **The live Supabase project's credentials have not touched this app's
+  committed history.** The project's secret (service-role) API key was
+  shared in chat during setup and was never written to any file, committed
+  or not. Only the project URL and the publishable (anon) key — safe for
+  browser use under RLS — were ever placed in `.env.local`, which is
+  git-ignored (`.env*` in `.gitignore`, with `.env.example` as the only
+  tracked exception). That file was later deleted from this session's
+  working copy once it became clear the sandbox's network policy blocks
+  outbound calls to `*.supabase.co` anyway, so there was no reason to leave
+  credentials on disk unused.
 
 ## Target state (full Gate 2+ — see blueprint §10)
 

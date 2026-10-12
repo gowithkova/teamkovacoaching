@@ -1,8 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { useMemo } from "react";
-import { useStore } from "@/lib/store";
+import { getSessions } from "@/lib/db/sessions";
+import { getClients } from "@/lib/db/clients";
 import { Card, CardBody } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { SESSION_STATUS_LABEL, type VisitSession } from "@/lib/types";
@@ -24,31 +22,28 @@ function SessionRow({ session, clientName }: { session: VisitSession; clientName
   );
 }
 
-export default function SessionsPage() {
-  const { sessions, clients } = useStore();
+export default async function SessionsPage() {
+  const [sessions, clients] = await Promise.all([getSessions(), getClients()]);
   const clientName = (id: string) => clients.find((c) => c.id === id)?.displayName ?? "Client";
 
-  const today = useMemo(() => sessions.filter((s) => isSameBrisbaneDay(s.plannedStart, new Date().toISOString())), [sessions]);
-  const needsNote = useMemo(() => sessions.filter((s) => s.status === "completed" && !s.noteId), [sessions]);
-  const upcoming = useMemo(
-    () =>
-      sessions
-        .filter((s) => ["proposed", "tentative", "confirmed"].includes(s.status) && !today.includes(s))
-        .sort((a, b) => new Date(a.plannedStart).getTime() - new Date(b.plannedStart).getTime())
-        .slice(0, 10),
-    [sessions, today],
-  );
-  const recent = useMemo(
-    () =>
-      sessions
-        .filter((s) => ["completed", "reviewed", "invoiced", "paid"].includes(s.status))
-        .sort((a, b) => new Date(b.plannedStart).getTime() - new Date(a.plannedStart).getTime())
-        .slice(0, 10),
-    [sessions],
-  );
+  const today = sessions.filter((s) => isSameBrisbaneDay(s.plannedStart, new Date().toISOString()));
+  const needsNote = sessions.filter((s) => s.status === "completed" && !s.noteId);
+  const upcoming = sessions
+    .filter((s) => ["proposed", "tentative", "confirmed"].includes(s.status) && !today.includes(s))
+    .sort((a, b) => new Date(a.plannedStart).getTime() - new Date(b.plannedStart).getTime())
+    .slice(0, 10);
+  const recent = sessions
+    .filter((s) => ["completed", "reviewed", "invoiced", "paid"].includes(s.status))
+    .sort((a, b) => new Date(b.plannedStart).getTime() - new Date(a.plannedStart).getTime())
+    .slice(0, 10);
 
   return (
     <div className="space-y-6">
+      {sessions.length === 0 && (
+        <p className="rounded-lg border border-line bg-surface-sunken px-3 py-2.5 text-sm text-ink-soft">
+          No sessions yet — they&apos;ll appear once a client has a scheduled visit.
+        </p>
+      )}
       {needsNote.length > 0 && (
         <section>
           <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-danger">Needs a note</h3>

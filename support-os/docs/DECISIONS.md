@@ -151,6 +151,84 @@ the reason Gate 2 paused after the Leads slice: verify the live round-trip
 on one screen with real credentials before replicating the same schema/RLS
 pattern across Clients, Calendar and Sessions.
 
+## 2026-10-12 — Clients, Calendar and Sessions migrated to the same Server
+Component + Server Action pattern as Leads
+
+Followed the reference pattern established for Leads exactly, rather than
+inventing a second approach: `src/lib/db/{clients,engagements,contacts,
+availability,sessions,serviceNotes}.ts` as `"use server"` modules, pages
+rewritten as `async` Server Components, client components adapted
+case-by-case —
+
+- `ClientDetailClient` and the Clients/Sessions list pages had no real
+  interactivity of their own and dropped `"use client"` entirely, taking
+  typed props instead of `useStore()`.
+- `CalendarClient` and `SessionDetailClient` genuinely need client-side
+  state (view toggle, week navigation, note draft, pending transitions) and
+  stayed client components, but now source their initial data from
+  server-fetched props instead of the old store.
+
+`LeadDetailClient`'s "Convert to client" button is re-enabled, calling the
+`convert_lead_to_client` Postgres function and navigating to the resulting
+client record — the inconsistency flagged in the previous entry is now
+closed.
+
+Two deliberate, bounded leftovers from this slice (not oversights):
+
+- On Clients, the Invoices and Safety(incidents) tabs now show "lands with
+  Gate 3/4" placeholder text instead of reading Gate 1's fixture invoices/
+  incidents — those fixtures reference Gate 1's fixture client IDs, which
+  don't exist as real UUIDs, so cross-referencing them would be actively
+  wrong, not just incomplete.
+- On Sessions, "report a concern" still calls `useStore().addIncident` —
+  harmless, since incidents aren't persisted anywhere yet regardless of
+  which store they land in — and draft-invoice creation was replaced with
+  the same kind of placeholder text, since invoicing isn't linked to real
+  sessions until the Money migration (Gate 3).
+
+Today's priority queue, income forecast and top summary bar remain on
+Gate 1 fixtures entirely (per the previous entry's reasoning) — they still
+don't reflect real leads, clients or sessions. That migration is deferred
+until Money is also on the new pattern, so Today can move as a whole
+rather than partially.
+
+## 2026-10-12 — Mid-session credential handling: secret key never persisted,
+`.env.local` deleted once proven unreachable
+
+The user pasted a live Supabase project's full settings screen into chat,
+including the project's secret (service-role) API key. That key was never
+written to any file in this session, committed or not — only the project
+URL and the publishable (anon) key went into `.env.local` (git-ignored via
+the existing `.env*` rule, confirmed with `git check-ignore -v`). Once it
+became clear this sandbox's egress policy blocks outbound connections to
+`*.supabase.co` (see the next entry), `.env.local` served no purpose here
+and was deleted rather than left on disk. This wasn't an explicit user
+instruction — it's the standing rule applied by default and worth
+recording so it isn't re-litigated: the secret key must never be written
+anywhere, and credential files should not be kept once they're unusable in
+the current environment.
+
+## 2026-10-12 — Live Supabase verification blocked by sandbox network policy
+
+`curl https://dmjyouwkvrwwohkxdehu.supabase.co/auth/v1/health` returned
+`CONNECT tunnel failed, response 403` — confirmed via the proxy's status
+endpoint as a deliberate `connect_rejected` policy decision (this cloud
+environment's Network access setting), not a transient failure. Docker is
+also unavailable in this sandbox (`service docker start` fails with a
+`ulimit` permission error), which ruled out running a full local Supabase
+stack as a substitute. The schema was instead verified against genuine
+local Postgres + RLS (see the earlier verification entry) — real, but not
+a substitute for exercising Supabase's actual Auth and PostgREST layers.
+
+Two independent next steps, neither blocked on the other:
+
+1. The user can apply `supabase/schema.sql` via their own project's SQL
+   editor at any time — this doesn't need this session's network access.
+2. If live verification from this session is wanted, the environment's
+   Network access level needs widening (or `*.supabase.co` added to
+   Allowed domains) from the environment settings, not from inside the
+   session.
+
 ## 2026-10-12 — Fixture schedule is weekday-anchored, not offset-anchored
 
 Early fixtures put recurring sessions at fixed day-offsets from "today"

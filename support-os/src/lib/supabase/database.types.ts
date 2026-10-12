@@ -258,6 +258,20 @@ export interface Database {
         Args: { p_lead_id: string; p_note: string };
         Returns: void;
       };
+      convert_lead_to_client: {
+        Args: { p_lead_id: string };
+        Returns: string;
+      };
+      complete_session_with_note: {
+        Args: {
+          p_session_id: string;
+          p_activities: string;
+          p_participant_response: string;
+          p_factual_observations: string;
+          p_next_steps: string;
+        };
+        Returns: string;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

@@ -76,3 +76,14 @@ export async function addLeadActivity(id: string, note: string): Promise<void> {
   if (error) throw new Error(`Failed to log activity: ${error.message}`);
   revalidatePath(`/leads/${id}`);
 }
+
+/** Converts a lead into a client + draft engagement (one DB transaction — see schema.sql). */
+export async function convertLeadToClient(id: string): Promise<string> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("convert_lead_to_client", { p_lead_id: id });
+  if (error) throw new Error(`Failed to convert lead: ${error.message}`);
+  revalidatePath("/leads");
+  revalidatePath(`/leads/${id}`);
+  revalidatePath("/clients");
+  return data;
+}

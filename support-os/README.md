@@ -8,13 +8,22 @@ encodes.
 
 **Current stage: Gate 2 in progress.** Gate 1 (clickable synthetic
 prototype — every figure, name and rate invented) is done. Gate 2 is adding
-real auth + Postgres persistence screen by screen, starting with **Leads**,
-which is now fully backed by a real Supabase project with row-level
-security — see "Gate 2 setup" below. **Every other screen (Clients,
-Calendar, Sessions, Money, Documents, Settings) is still Gate 1's in-memory
-synthetic data**, and now sits behind the same login as Leads. See
+real auth + Postgres persistence screen by screen. **Leads, Clients,
+Calendar and Sessions are now fully backed by Supabase + Postgres with
+row-level security** — see "Gate 2 setup" below. **Money, Documents and
+Settings are still Gate 1's in-memory synthetic data** (this matches the
+blueprint's own Gate 2 scope — invoicing and document storage land in
+Gates 3–4), and every screen sits behind the same login. See
 `docs/DECISIONS.md` for the migration plan and what's deliberately
 transitional about this in-between state.
+
+The app's own schema has been verified directly against a real local
+Postgres (RLS, triggers, functions — see `docs/DECISIONS.md`), but **not
+yet against the live Supabase project** — this session's sandbox blocks
+outbound network access to `*.supabase.co`. Apply `supabase/schema.sql` via
+your project's own SQL editor and the real round-trip (signup, login, every
+Server Action) still needs to be exercised against the live project before
+trusting it with real client data.
 
 ## What's here
 
@@ -25,19 +34,26 @@ transitional about this in-between state.
   Home/private-pay/provider prospects, a 100-point fit rubric
   (commercial/logistics only, never protected traits), advertised/proposed/
   agreed rate kept visibly distinct, copy-first message templates.
-  Convert-to-client is temporarily disabled in the UI until Clients is also
-  persisted (next migration step) — see `docs/DECISIONS.md`.
-- **Clients** — engagement readiness (red/amber/green) with explicit
-  blockers, approved vs excluded scope, contacts, schedule, sessions &
-  notes, invoices, safety.
-- **Calendar** — list and week views, recurring availability blocks
-  (parenting / other employment / personal / unavailable), live conflict
-  detection against both other sessions and the operator's own blocked
-  time — a proposed booking that clashes is never shown as confirmable.
-- **Sessions** — the live-session flow: pre-visit brief → start → a
-  60-second guided note → complete → (if the engagement is actually ready)
-  create a draft invoice. Includes cancellation recording and a "report a
-  concern" quick action that opens a factual incident record.
+  Convert-to-client now writes a real client + engagement via the
+  `convert_lead_to_client` Postgres function and navigates to the new
+  client record.
+- **Clients** *(persisted — Supabase + RLS)* — engagement readiness
+  (red/amber/green) with explicit blockers, approved vs excluded scope,
+  contacts, schedule, sessions & notes. Invoices and safety/incidents tabs
+  show explanatory placeholder text — those stay on Gate 1 data until the
+  Money (Gate 3) and Documents & Safety (Gate 4) migrations.
+- **Calendar** *(persisted — Supabase + RLS)* — list and week views,
+  recurring availability blocks (parenting / other employment / personal /
+  unavailable), live conflict detection against both other sessions and the
+  operator's own blocked time — a proposed booking that clashes is never
+  shown as confirmable.
+- **Sessions** *(persisted — Supabase + RLS)* — the live-session flow:
+  pre-visit brief → start → a 60-second guided note → complete, via the
+  atomic `complete_session_with_note` Postgres function. Includes
+  cancellation recording and a "report a concern" quick action (still
+  writes to the Gate 1 store — incidents land with Gate 4). Draft-invoice
+  creation shows a "lands with Gate 3" placeholder instead of linking to
+  Gate 1's synthetic invoices.
 - **Money** — this week's earned/invoiced/received/overdue, a 4-week
   forecast split by funding lane, an ageing table, a price book that keeps
   NDIS schedule caps, a provider's retail price and the operator's actually
@@ -102,13 +118,18 @@ npm test         # unit tests — don't need Supabase credentials
 
 ## Known limitations (by design, for this gate)
 
-- Only Leads is persisted. Every other screen is still Gate 1's in-memory
-  synthetic data — don't treat anything you enter there as saved, and
-  expect it to reset on reload. "Convert to client" is disabled until
-  Clients is migrated too.
-- A new account's Leads list starts genuinely empty (no synthetic seed
-  data ships into a real database) — `supabase/seed.sql` has optional
-  synthetic demo rows if you want something to look at.
+- Leads, Clients, Calendar and Sessions are persisted. Money, Documents and
+  Settings are still Gate 1's in-memory synthetic data — don't treat
+  anything you enter there as saved, and expect it to reset on reload.
+- A new account's data starts genuinely empty (no synthetic seed data ships
+  into a real database) — `supabase/seed.sql` has optional synthetic demo
+  rows if you want something to look at.
+- There is also a comprehensive Google Sheets companion
+  (`KOVA Support OS — Data Tracker`) mirroring every Gate 2 table 1:1,
+  built as an interim workaround while the live Supabase project was being
+  set up. It is **not wired to the app** — see its README tab — and should
+  not be treated as a second source of truth once the live database is in
+  regular use.
 - No PDF/CSV export yet (Money → Invoices has the data model ready for it).
 - Credential/document files aren't actually uploaded anywhere.
 - Day-view calendar was folded into List view (which already groups by day)
@@ -128,10 +149,14 @@ src/
     leads/ clients/ calendar/ sessions/ money/ today/ shared/
   lib/
     types.ts            domain types (mirrors blueprint §8, simplified)
-    fixtures.ts         SYNTHETIC seed data only
-    store.tsx           in-memory React context + mutators (no backend yet)
+    fixtures.ts         SYNTHETIC seed data only (still backs Money/Docs/Settings)
+    store.tsx           in-memory React context + mutators (Money/Docs/Settings only)
+    db/                 "use server" data-access layer — Supabase reads + Server Action mutations
+    supabase/           browser/server/middleware Supabase clients + generated types
     dates.ts money.ts   Brisbane-time and integer-cent helpers
     invoicing.ts forecast.ts conflicts.ts priority.ts leadFit.ts templates.ts
+supabase/
+  schema.sql seed.sql   Postgres schema (tables, RLS, triggers, functions) + optional demo data
 docs/
   DECISIONS.md DATA_PRIVACY.md REGULATORY_ASSUMPTIONS.md TEST_PLAN.md
 ```
@@ -140,4 +165,5 @@ docs/
 
 See `docs/TEST_PLAN.md` and the blueprint's §14 for the full gate list.
 Gate 2 adds real auth, Postgres + RLS and persistence for everything this
-prototype currently only holds in memory.
+prototype currently only holds in memory — Leads, Clients, Calendar and
+Sessions are done; Money and Documents & Safety are next (Gates 3–4).

@@ -23,7 +23,7 @@ import { TemplateBox } from "@/components/shared/TemplateBox";
 import { leadFitScore } from "@/lib/leadFit";
 import { formatCents } from "@/lib/money";
 import { formatDateShort } from "@/lib/dates";
-import { setLeadStatus, addLeadActivity } from "@/lib/db/leads";
+import { setLeadStatus, addLeadActivity, convertLeadToClient } from "@/lib/db/leads";
 import {
   declineReferral,
   enquiryAcknowledgment,
@@ -89,6 +89,13 @@ export function LeadDetailClient({ lead, organisations }: { lead: Lead | null; o
     });
   }
 
+  function handleConvert() {
+    startTransition(async () => {
+      const clientId = await convertLeadToClient(leadId);
+      router.push(`/clients/${clientId}`);
+    });
+  }
+
   return (
     <div className="space-y-5">
       <Link href="/leads" className="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
@@ -124,13 +131,14 @@ export function LeadDetailClient({ lead, organisations }: { lead: Lead | null; o
             <p className="rounded-md bg-amber-soft px-3 py-2 text-sm text-amber">{lead.statusReason}</p>
           )}
           {lead.convertedClientId ? (
-            <p className="text-sm text-ink-soft">Converted to a client record.</p>
+            <Link href={`/clients/${lead.convertedClientId}`} className="inline-block">
+              <Button variant="secondary">View client record</Button>
+            </Link>
           ) : (
             <div className="flex flex-wrap items-center gap-2">
-              <Button variant="primary" disabled title="Lands once the Clients screen is also persisted (next step)">
+              <Button variant="primary" onClick={handleConvert} disabled={isPending}>
                 Convert to client
               </Button>
-              <span className="text-xs text-ink-faint">Convert-to-client lands with the Clients migration.</span>
               <Button variant="danger" onClick={() => setShowDecline((v) => !v)}>Decline / not suitable</Button>
             </div>
           )}

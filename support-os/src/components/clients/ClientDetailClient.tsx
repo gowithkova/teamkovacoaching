@@ -1,22 +1,28 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { useStore } from "@/lib/store";
 import { Tabs } from "@/components/ui/Tabs";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { ReadinessBadge } from "@/components/ui/ReadinessBadge";
-import { FUNDING_LANE_LABEL, INVOICE_STATUS_LABEL, SESSION_STATUS_LABEL } from "@/lib/types";
-import { formatCents } from "@/lib/money";
-import { invoiceOutstandingCents, invoiceTotalCents } from "@/lib/invoicing";
+import { FUNDING_LANE_LABEL, SESSION_STATUS_LABEL } from "@/lib/types";
+import type { Client, Contact, Engagement, ServiceNote, VisitSession } from "@/lib/types";
 import { formatDateShort, formatTimeRange, relativeDayLabel } from "@/lib/dates";
+import { formatCents } from "@/lib/money";
 import { nextUpcomingSession } from "@/lib/selectors";
 
-export function ClientDetailClient({ id }: { id: string }) {
-  const { clients, engagements, contacts, sessions, serviceNotes, invoices, incidents } = useStore();
-  const client = clients.find((c) => c.id === id);
-
+export function ClientDetailClient({
+  client,
+  engagement,
+  contacts,
+  sessions,
+  serviceNotes,
+}: {
+  client: Client | null;
+  engagement?: Engagement;
+  contacts: Contact[];
+  sessions: VisitSession[];
+  serviceNotes: ServiceNote[];
+}) {
   if (!client) {
     return (
       <div className="space-y-3">
@@ -26,13 +32,10 @@ export function ClientDetailClient({ id }: { id: string }) {
     );
   }
 
-  const engagement = engagements.find((e) => e.clientId === client.id);
   const clientContacts = contacts.filter((c) => c.clientId === client.id);
-  const clientSessions = sessions
+  const clientSessions = [...sessions]
     .filter((s) => s.clientId === client.id)
     .sort((a, b) => new Date(b.plannedStart).getTime() - new Date(a.plannedStart).getTime());
-  const clientInvoices = invoices.filter((inv) => inv.clientId === client.id);
-  const clientIncidents = incidents.filter((inc) => inc.clientId === client.id);
   const next = nextUpcomingSession(clientSessions);
 
   return (
@@ -153,6 +156,9 @@ export function ClientDetailClient({ id }: { id: string }) {
                       </CardBody>
                     </Card>
                   ))}
+                {clientSessions.filter((s) => new Date(s.plannedStart) >= new Date()).length === 0 && (
+                  <p className="text-sm text-ink-soft">No upcoming visits scheduled.</p>
+                )}
               </div>
             ),
           },
@@ -177,6 +183,7 @@ export function ClientDetailClient({ id }: { id: string }) {
                     </Link>
                   );
                 })}
+                {clientSessions.length === 0 && <p className="text-sm text-ink-soft">No sessions yet.</p>}
               </div>
             ),
           },
@@ -186,24 +193,9 @@ export function ClientDetailClient({ id }: { id: string }) {
             content: (
               <div className="space-y-2">
                 <Link href="/money" className="text-sm text-accent-strong hover:underline">Open Money</Link>
-                {clientInvoices.map((inv) => (
-                  <Card key={inv.id}>
-                    <CardBody className="flex items-center justify-between pt-4 text-sm">
-                      <div>
-                        <p className="font-medium text-ink">{inv.number}</p>
-                        <p className="text-ink-soft">{formatDateShort(inv.issueDate)}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="tabular font-medium text-ink">{formatCents(invoiceTotalCents(inv))}</p>
-                        {invoiceOutstandingCents(inv) > 0 && (
-                          <p className="tabular text-xs text-amber">{formatCents(invoiceOutstandingCents(inv))} outstanding</p>
-                        )}
-                      </div>
-                      <Badge tone="neutral">{INVOICE_STATUS_LABEL[inv.status]}</Badge>
-                    </CardBody>
-                  </Card>
-                ))}
-                {clientInvoices.length === 0 && <p className="text-sm text-ink-soft">No invoices yet.</p>}
+                <p className="text-sm text-ink-soft">
+                  Invoicing is still Gate 1&apos;s synthetic data and isn&apos;t linked to real clients yet — lands with the Money migration (Gate 3).
+                </p>
               </div>
             ),
           },
@@ -226,13 +218,9 @@ export function ClientDetailClient({ id }: { id: string }) {
                 <Card>
                   <CardHeader><CardTitle>Incidents</CardTitle></CardHeader>
                   <CardBody className="space-y-2">
-                    {clientIncidents.length === 0 && <p className="text-sm text-ink-soft">No incidents recorded.</p>}
-                    {clientIncidents.map((inc) => (
-                      <div key={inc.id} className="rounded-lg border border-line p-2.5 text-sm">
-                        <p className="text-ink-faint">{formatDateShort(inc.occurredAt)}</p>
-                        <p className="text-ink">{inc.factualDescription}</p>
-                      </div>
-                    ))}
+                    <p className="text-sm text-ink-soft">
+                      The incident register is still Gate 1&apos;s synthetic data — lands with the Documents &amp; Safety migration (Gate 4).
+                    </p>
                     <Link href="/documents" className="text-sm text-accent-strong hover:underline">Open incident register</Link>
                   </CardBody>
                 </Card>

@@ -280,6 +280,105 @@ as $$
   where id = p_lead_id;
 $$;
 
+-- Converts a lead into a client + a draft engagement, atomically (one
+-- transaction — if either insert fails, neither is left orphaned). NOT
+-- security definer: runs as the calling role, so RLS still gates the
+-- SELECT/UPDATE on leads and the INSERTs into clients/engagements, and
+-- owner_id's default auth.uid() scopes the new rows to the same caller.
+-- Idempotent: calling it again on an already-converted lead just returns
+-- the existing client id rather than creating a duplicate.
+create or replace function convert_lead_to_client(p_lead_id uuid)
+returns uuid
+language plpgsql
+as $$
+declare
+  v_lead leads%rowtype;
+  v_client_id uuid;
+  v_needs_provider boolean;
+begin
+  select * into v_lead from leads where id = p_lead_id;
+  if not found then
+    raise exception 'Lead not found or not visible to this account';
+  end if;
+  if v_lead.converted_client_id is not null then
+    return v_lead.converted_client_id;
+  end if;
+
+  insert into clients (display_name, suburb, funding_lane, contracted_payer_label, support_brief)
+  values (
+    v_lead.display_alias,
+    v_lead.suburb,
+    v_lead.funding_lane,
+    'To be confirmed — complete the service agreement',
+    jsonb_build_object('approvedActivities', to_jsonb(v_lead.requested_services), 'excludedActivities', '[]'::jsonb)
+  )
+  returning id into v_client_id;
+
+  v_needs_provider := v_lead.funding_lane = 'support_at_home';
+
+  insert into engagements (
+    client_id, funding_lane, scope_allowed, readiness_state, readiness_blockers,
+    provider_approval_status, transport_consent_status, agreed_worker_rate_cents, rate_unit, status
+  )
+  values (
+    v_client_id,
+    v_lead.funding_lane,
+    v_lead.requested_services,
+    'amber',
+    array['New engagement — service agreement and consents not yet recorded']
+      || case when v_needs_provider then array['Registered provider approval not yet granted'] else array[]::text[] end,
+    case when v_needs_provider then 'pending' else 'not_required' end,
+    'pending',
+    coalesce(v_lead.proposed_worker_rate_cents, 0),
+    'hour',
+    'draft'
+  );
+
+  update leads set status = 'won_onboarding', converted_client_id = v_client_id where id = p_lead_id;
+
+  return v_client_id;
+end;
+$$;
+
+-- Writes the visit note and marks the session completed in one
+-- transaction. NOT security definer — but note the explicit ownership
+-- check before the INSERT: without it, a caller holding another account's
+-- session UUID could have their own service_notes row silently accepted
+-- (its own owner_id/RLS check would pass, since it references the
+-- *session*, not the *account*) even though the later UPDATE on `sessions`
+-- would then correctly affect 0 rows under RLS. Checking first closes that
+-- gap rather than relying on the UPDATE to catch it after the fact.
+create or replace function complete_session_with_note(
+  p_session_id uuid,
+  p_activities text,
+  p_participant_response text,
+  p_factual_observations text,
+  p_next_steps text
+)
+returns uuid
+language plpgsql
+as $$
+declare
+  v_note_id uuid;
+  v_exists boolean;
+begin
+  select exists(select 1 from sessions where id = p_session_id) into v_exists;
+  if not v_exists then
+    raise exception 'Session not found or not visible to this account';
+  end if;
+
+  insert into service_notes (session_id, activities, participant_response, factual_observations, next_steps)
+  values (p_session_id, p_activities, p_participant_response, p_factual_observations, p_next_steps)
+  returning id into v_note_id;
+
+  update sessions
+  set status = 'completed', note_id = v_note_id, actual_end = coalesce(actual_end, now())
+  where id = p_session_id;
+
+  return v_note_id;
+end;
+$$;
+
 -- ---------------------------------------------------------------------------
 -- updated_at maintenance
 -- ---------------------------------------------------------------------------
